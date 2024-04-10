@@ -38,16 +38,17 @@ class Router
 		$this->loadRoutes();
 	}
 
+
 	/**
-	 * Resolves a callback based on the request path and method, handling different types of callbacks 
-	 * including invokable classes and controller methods.
+	 * The function resolves a route callback based on the request path and method, handling different
+	 * callback types including invokable classes and controller methods.
 	 * 
-	 * @return mixed - the callback function or method based on the route defined in the routes array. 
-	 * If the callback is a string, it checks if it is a callable class or a controller method, 
-	 * and then executes it with the current request object. If the callback is not found or is not a valid method, 
-	 * it sets the response status code to 404.
+	 * @return array|string|null The `resolve()` function returns an array, string, or null value. If the
+	 * callback is not found in the routes, it sets the status code to 404 and returns the string 'Not
+	 * Found 404'. If the callback is a string, it checks if it is a callable class or a controller method
+	 * and executes it accordingly. If the callback is a callable function, it directly calls the callback
 	 */
-	public function resolve(): ?array
+	public function resolve(): array|string|null
 	{
 		$path = $this->request->getPath();
 		$method = $this->request->getMethod();
@@ -55,7 +56,7 @@ class Router
 
 		if (!$callback) {
 			$this->response->setStatusCode(404);
-			return $this->response->redirect('/404');
+			return 'Not Found 404';
 		}
 
 		if (is_string($callback)) {
@@ -72,6 +73,8 @@ class Router
 				}
 			}
 		}
+
+		return $callback($this->request);
 	}
 
 	/**
