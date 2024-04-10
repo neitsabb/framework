@@ -102,9 +102,9 @@ class Router
 	{
 		foreach (Application::$app->modules->all() as $moduleName => $modules) {
 			foreach ($modules as $componentName => $component) {
-				foreach ($component as $component) {
-
-					$controllerNamespace = ucfirst(substr(Application::$app->config->get('modules.path'), 1)) . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . $componentName . DIRECTORY_SEPARATOR . $component;
+				foreach ($component as $controllerName) {
+					// Transformer le nom du contrôleur en namespace
+					$controllerNamespace = 'Modules\\' . $moduleName . '\\' . $componentName . '\\' . $controllerName;
 					$routes = $this->getControllerRoutes($controllerNamespace);
 
 					$this->addRoutes($routes, $controllerNamespace);
