@@ -1,6 +1,8 @@
 # Ignore les fichiers et répertoires générés par Composer
 /vendor/
 
+/.vscode/
+
 # Ignore les fichiers d'environnement spécifiques à l'utilisateur
 .env
 

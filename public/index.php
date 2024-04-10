@@ -10,7 +10,7 @@
  * @author Neitsab
  */
 
-define('APP_ROOT', dirname(__DIR__));
+define('APP_ROOT', $_ENV['APP_URL'] ?? dirname(__DIR__));
 
 require_once APP_ROOT . '/vendor/autoload.php';
 
@@ -23,7 +23,7 @@ $dotenv->load();
 require_once APP_ROOT . '/app/helpers/utils.php';
 
 // Set the error reporting level
-if(env('APP_DEBUG')) {
+if (env('APP_DEBUG')) {
 	ini_set('display_errors', 1);
 	ini_set('display_startup_errors', 1);
 	error_reporting(E_ALL);
@@ -38,4 +38,3 @@ try {
 } catch (Exception $e) {
 	echo "Une erreur s'est produite: " . $e->getMessage();
 }
-
