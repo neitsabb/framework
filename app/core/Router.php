@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Core;
 
@@ -6,7 +6,7 @@ use App\Core\Application;
 use App\Core\Request;
 use App\Core\Response;
 
-class Router 
+class Router
 {
 	/**
 	 * @var array $routes
@@ -35,7 +35,7 @@ class Router
 		$this->request = $request;
 		$this->response = $response;
 
-		$this->loadRoutes();	
+		$this->loadRoutes();
 	}
 
 	/**
@@ -47,25 +47,25 @@ class Router
 	 * and then executes it with the current request object. If the callback is not found or is not a valid method, 
 	 * it sets the response status code to 404.
 	 */
-	public function resolve(): mixed
+	public function resolve(): ?array
 	{
 		$path = $this->request->getPath();
 		$method = $this->request->getMethod();
 		$callback = $this->routes[$method][$path] ?? false;
-		
-		if(!$callback) {
+
+		if (!$callback) {
 			$this->response->setStatusCode(404);
 			return $this->response->redirect('/404');
 		}
 
-		if(is_string($callback)) {
-			if(method_exists($callback, '__invoke')) {
+		if (is_string($callback)) {
+			if (method_exists($callback, '__invoke')) {
 				return (new $callback)($this->request);
 			} else {
 				$callback = explode('@', $callback);
-				$controller = new $callback[0];
+				$controller = Application::$container->get($callback[0]);
 				$controller->action = $callback[1];
-				if(method_exists($controller, $callback[1])) {
+				if (method_exists($controller, $callback[1])) {
 					return $controller->{$callback[1]}($this->request);
 				} else {
 					return Exception::throw('Method not found in controller', 404);
@@ -84,10 +84,10 @@ class Router
 	 */
 	private function addRoutes(array $routes, string $controller): void
 	{
-		if(method_exists($controller, '__invoke')) {
+		if (method_exists($controller, '__invoke')) {
 			$this->routes[$routes['method']][$routes['path']] = $controller;
 		} else {
-			foreach($routes as $callback => $route) {
+			foreach ($routes as $callback => $route) {
 				$this->routes[$route['method']][$route['path']] = $controller . '@' . $callback;
 			}
 		}
@@ -99,11 +99,11 @@ class Router
 	 * @return void
 	 */
 	private function loadRoutes(): void
-    {
-        foreach (Application::$app->modules->all() as $moduleName => $modules) {
-            foreach ($modules as $componentName => $component) {
+	{
+		foreach (Application::$app->modules->all() as $moduleName => $modules) {
+			foreach ($modules as $componentName => $component) {
 				foreach ($component as $component) {
-					
+
 					$controllerNamespace = ucfirst(substr(Application::$app->config->get('modules.path'), 1)) . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . $componentName . DIRECTORY_SEPARATOR . $component;
 					$routes = $this->getControllerRoutes($controllerNamespace);
 
@@ -112,8 +112,8 @@ class Router
 			}
 		}
 	}
-				
-    /**
+
+	/**
 	 * Retrieves routes defined in a controller class if the class
 	 * exists and has a `routes` method.
 	 * 
@@ -125,14 +125,14 @@ class Router
 	 * @return array An array of routes is being returned.
 	 */
 	private function getControllerRoutes(string $controllerNamespace): array
-    {
-        $routes = [];
-        if (class_exists($controllerNamespace)) {
-            $reflectionClass = new \ReflectionClass($controllerNamespace);
-            if ($reflectionClass->hasMethod('routes')) {
-                $routes = $controllerNamespace::routes();
-            }
-        }
-        return $routes;
-    }
+	{
+		$routes = [];
+		if (class_exists($controllerNamespace)) {
+			$reflectionClass = new \ReflectionClass($controllerNamespace);
+			if ($reflectionClass->hasMethod('routes')) {
+				$routes = $controllerNamespace::routes();
+			}
+		}
+		return $routes;
+	}
 }
