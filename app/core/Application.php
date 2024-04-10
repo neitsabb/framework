@@ -1,12 +1,15 @@
-<?php 
+<?php
 
 namespace App\Core;
 
+
 use App\Core\Config;
+use App\Core\Container;
 use App\Core\Modules;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Router;
+
 
 class Application
 {
@@ -20,6 +23,11 @@ class Application
 	 * @var Application $app - The application instance
 	 */
 	public static $app;
+
+	/**
+	 * @var Container $container - The container is responsible for managing class dependencies and performing dependency injection.
+	 */
+	public static Container $container;
 
 	/**
 	 * @var Config $config - The configuration contains the configuration of the application
@@ -56,6 +64,7 @@ class Application
 	{
 		self::$rootDir = $path;
 		self::$app = $this;
+		self::$container = new Container();
 
 		// Load the configuration
 		$this->config = new Config();
