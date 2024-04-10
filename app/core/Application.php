@@ -3,13 +3,13 @@
 namespace App\Core;
 
 
+use App\Core\Theme;
 use App\Core\Config;
-use App\Core\Container;
+use App\Core\Router;
 use App\Core\Modules;
 use App\Core\Request;
 use App\Core\Response;
-use App\Core\Router;
-
+use App\Core\Container;
 
 class Application
 {
@@ -19,40 +19,62 @@ class Application
 	 */
 	public static $rootDir;
 
+
 	/**
 	 * @var Application $app - The application instance
 	 */
 	public static $app;
+
 
 	/**
 	 * @var Container $container - The container is responsible for managing class dependencies and performing dependency injection.
 	 */
 	public static Container $container;
 
+
 	/**
 	 * @var Config $config - The configuration contains the configuration of the application
 	 */
 	public Config $config;
+
 
 	/**
 	 * @var Modules $modules - is responsible for loading and organizing modules within a specified directory structure
 	 */
 	public Modules $modules;
 
+
+	/**
+	 * @var Theme $theme - handles loading the active theme and rendering views using the theme.
+	 */
+	public Theme $theme;
+
+	/**
+	 * @var Template $template - handles rendering views using the active theme.
+	 */
+	public Template $template;
+
 	/**
 	 * @var Request $request - handles sanitizing and storing request values, retrieving URL paths, and checking HTTP request methods.
 	 */
 	public Request $request;
+
 
 	/**
 	 * @var Response $response - provides methods to set HTTP response codes and redirect users to specified URLs in PHP.
 	 */
 	public Response $response;
 
+
 	/**
 	 * @var Router $router - handles routing requests to appropriate controller actions based on defined routes.
 	 */
 	public Router $router;
+
+	/**
+	 * @var Controller $controller - The controller is responsible for handling user requests and producing responses.
+	 */
+	public Controller $controller;
 
 	/**
 	 * The constructor initializes various components such as configuration, modules, request, response,
@@ -72,10 +94,16 @@ class Application
 		// Load the modules
 		$this->modules = new Modules();
 
+		// Load the theme
+		$this->theme = new Theme();
+		$this->template = new Template();
+
+		// Load the request, response, and router
 		$this->request = new Request();
 		$this->response = new Response();
 		$this->router = new Router($this->request, $this->response);
 	}
+
 
 	/**
 	 * The run method is responsible for running the application and resolving the router.
@@ -85,6 +113,7 @@ class Application
 	{
 		echo $this->router->resolve();
 	}
+
 
 	/**
 	 * The getRoutes method returns the routes defined in the router.

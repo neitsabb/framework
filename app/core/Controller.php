@@ -1,9 +1,10 @@
-<?php 
+<?php
 
 namespace App\Core;
 
-abstract class Controller 
+abstract class Controller
 {
+	public string $layout = 'main';
 	public array $middlewares = [];
 
 	/**
@@ -28,8 +29,13 @@ abstract class Controller
 	 */
 	abstract public static function routes();
 
-	public function registerMiddleware(array $middlewares)
+	protected function registerMiddleware(array $middlewares)
 	{
 		$this->middlewares[] = $middlewares;
+	}
+
+	protected function render(string $view, array $params = [])
+	{
+		return Application::$app->template->build($view, $params, $this->layout);
 	}
 }

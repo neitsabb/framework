@@ -11,7 +11,7 @@ class TestController extends Controller
 	{
 		return [
 			'index' => [
-				'path' => '/generator',
+				'path' => '/',
 				'method' => 'GET'
 			],
 		];
@@ -19,7 +19,6 @@ class TestController extends Controller
 
 	public function index(Request $request)
 	{
-		echo 'TestController not Invokable Works!';
-		echo "<br>";
+		return $this->render('home');
 	}
 }

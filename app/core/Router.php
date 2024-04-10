@@ -61,10 +61,13 @@ class Router
 
 		if (is_string($callback)) {
 			if (method_exists($callback, '__invoke')) {
-				return (new $callback)($this->request);
+				$controller = new $callback;
+				Application::$app->controller = $controller;
+				return $controller($this->request);
 			} else {
 				$callback = explode('@', $callback);
 				$controller = Application::$container->get($callback[0]);
+				Application::$app->controller = $controller;
 				$controller->action = $callback[1];
 				if (method_exists($controller, $callback[1])) {
 					return $controller->{$callback[1]}($this->request);
