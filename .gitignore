@@ -1,0 +1,15 @@
+# Ignore les fichiers et répertoires générés par Composer
+/vendor/
+
+# Ignore les fichiers d'environnement spécifiques à l'utilisateur
+.env
+
+# Ignore les fichiers de dépendances installées par Composer
+/composer.lock
+
+# Ignore les fichiers générés par PHPStorm
+/.idea/
+
+# Ignore les fichiers de cache et de logs
+/log/
+/tmp/

@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Exclure les fichiers image existants du processus de réécriture
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !\.(jpg|jpeg|png|gif)$
+
+# Réécrire toutes les autres demandes vers index.php
+RewriteRule . index.php [L]
