@@ -1,10 +1,8 @@
 <?php
 
-namespace Modules\Example\Services;
+namespace Modules\ExampleTest\Services;
 
-use Modules\Example\Contracts\TestRepositoryInterface;
-
-class TestRepository implements TestRepositoryInterface
+class TestRepository
 {
 	public function findAll(): array
 	{
