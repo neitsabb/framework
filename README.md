@@ -26,7 +26,7 @@ Ce projet est un petit framework MVC qui fonctionne avec des "modules" facilemen
 ## Créer un module
 
 1. Créer un dossier dans le répertoire `modules`.
-2. Dans ce dossier, créer plusieurs sous-dossiers nécessaires : controllers, models facultatif, views facultatif.
+2. Dans ce dossier, créer plusieurs sous-dossiers nécessaires : controllers, models, services 
 3. Vous pouvez maintenant créer votre logique dans vos controllers et leur ajouter des routes si nécessaire.
 
 ## Structure du Projet
@@ -44,12 +44,19 @@ Ce projet est un petit framework MVC qui fonctionne avec des "modules" facilemen
 |    |—— core
 |        |—— Application.php
 |        |—— Config.php
+|        |—— Container.php
 |        |—— Controller.php
 |        |—— Exception.php
 |        |—— Modules.php
 |        |—— Request.php
 |        |—— Response.php
 |        |—— Router.php
+|        |—— Template.php
+|        |—— Theme.php
+|    |—— exceptions
+|        |—— container
+|            |—— ContainerException.php
+|            |—— NotFoundException.php
 |    |—— helpers
 |        |—— utils.php
 |    |—— libs
@@ -57,26 +64,28 @@ Ce projet est un petit framework MVC qui fonctionne avec des "modules" facilemen
 |    |—— app.php
 |    |—— database.php
 |    |—— modules.php
+|    |—— themes.php
 |—— modules
-|    |—— auth
-|        |—— controllers
-|            |—— AuthController.php
-|        |—— models
-|            |—— User.php
-|        |—— views
-|            |—— show.php
-|    |—— users
-|        |—— controllers
-|            |—— GetAllUsersController.php
-|        |—— models
-|            |—— User.php
-|        |—— views
-|            |—— show.php
+|    |—— ExampleTest
+|        |—— Controllers
+|            |—— TestController.php
+|        |—— Models
+|        |—— Services
+|            |—— TestRepository.php
+|        |—— Views
+|—— themes
+|    |—— default
+|        |—— assets
+|        |—— index.php
+|        |—— layouts
+|            |—— main.php
+|        |—— pages
+|            |—— home.php
+|        |—— partials
+|        |—— theme.json
 |—— public
 |    |—— .htaccess
 |    |—— index.php
-|—— themes
-|    |—— default
 ```
 
 ## Contributions
