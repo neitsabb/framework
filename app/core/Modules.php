@@ -64,7 +64,12 @@ class Modules
             $components[$component] = $this->loadComponent($modulePath . DIRECTORY_SEPARATOR . $component);
         }
 
-        $this->modules[ucfirst($moduleName)] = $components;
+        // If the module name is not a Pascal case string, throw an exception
+        if (!preg_match('/^[A-Z][a-zA-Z0-9]*$/', $moduleName)) {
+            throw new \Exception("Invalid module name: $moduleName. Module name must be a Pascal case string.");
+        }
+
+        $this->modules[$moduleName] = $components;
     }
 
     /**
@@ -77,18 +82,18 @@ class Modules
     private function loadComponent(string $path): array
     {
         $loadedComponent = [];
-	
+
         if (is_dir($path)) {
             $files = scandir($path);
             foreach ($files as $file) {
                 $extension = pathinfo($file, PATHINFO_EXTENSION);
                 if ($extension === 'php') {
                     $namespace = pathinfo($file, PATHINFO_FILENAME);
-                    $loadedComponent[] = $namespace;
+                    $loadedComponent[] = ucfirst($namespace);
                 }
             }
         }
-		
+
         return $loadedComponent;
     }
 

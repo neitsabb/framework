@@ -1,7 +1,7 @@
-<?php 
+<?php
 
 return [
-	
+
 	/**
 	 * 
 	 * Modules folder path

@@ -7,7 +7,17 @@ use App\Exceptions\Container\ContainerException;
 
 class Container implements ContainerInterface
 {
+	/**
+	 * @var array $instances - Contains the instances of dependencies.
+	 */
 	private array $instances = [];
+
+	/**
+	 * Retrieves an instance of a class from the container.
+	 * 
+	 * @param string $id - The class name to retrieve from the container.
+	 * @return mixed - The instance of the class.
+	 */
 	public function get(string $id): mixed
 	{
 		if ($this->has($id)) {
@@ -18,18 +28,40 @@ class Container implements ContainerInterface
 		return $this->resolve($id);
 	}
 
+	/**
+	 * Checks if the container has an instance of a class.
+	 * 
+	 * @param string $id - The class name to check for in the container.
+	 * @return bool - Returns true if the class exists in the container, otherwise false.
+	 */
 	public function has(string $id): bool
 	{
 		return isset($this->instances[$id]);
 	}
 
+	/**
+	 * Sets an instance of a class in the container.
+	 * 
+	 * @param string $id - The class name to set in the container.
+	 * @param callable $concrete - The instance of the class to set in the container.
+	 */
 	public function set(string $id, callable $concrete): void
 	{
 		$this->instances[$id] = $concrete;
 	}
 
+	/**
+	 * Resolves a class from the container.
+	 * 
+	 * @param string $id - The class name to resolve from the container.
+	 * @return mixed - The resolved class instance.
+	 */
 	public function resolve(string $id): mixed
 	{
+		if (!class_exists($id)) {
+			throw new ContainerException("Class {$id} not found");
+		}
+
 		$reflectClass = new \ReflectionClass($id);
 		if (!$reflectClass->isInstantiable()) {
 			throw new ContainerException("Class {$id} is not instantiable");
