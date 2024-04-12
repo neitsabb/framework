@@ -66,13 +66,11 @@ Ce projet est un petit framework MVC qui fonctionne avec des "modules" facilemen
 |    |—— modules.php
 |    |—— themes.php
 |—— modules
-|    |—— ExampleTest
+|    |—— Generator
 |        |—— Controllers
-|            |—— TestController.php
-|        |—— Models
+|            |—— PasswordGenerator.php
 |        |—— Services
-|            |—— TestRepository.php
-|        |—— Views
+|            |—— Formatter.php
 |—— themes
 |    |—— default
 |        |—— assets
@@ -80,7 +78,7 @@ Ce projet est un petit framework MVC qui fonctionne avec des "modules" facilemen
 |        |—— layouts
 |            |—— main.php
 |        |—— pages
-|            |—— home.php
+|            |—— generator.php
 |        |—— partials
 |        |—— theme.json
 |—— public
