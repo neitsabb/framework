@@ -8,9 +8,24 @@ use App\Exceptions\Container\ContainerException;
 class Container implements ContainerInterface
 {
 	/**
+	 * @var array $bindings - Contains the bindings of dependencies.
+	 */
+	private array $bindings = [];
+	/**
 	 * @var array $instances - Contains the instances of dependencies.
 	 */
 	private array $instances = [];
+
+	/**
+	 * Binds an interface to a concrete class.
+	 * 
+	 * @param string $interface - The interface to bind.
+	 * @param string $concrete - The concrete class to bind to the interface.
+	 */
+	public function bind(string $interface, string $concrete): void
+	{
+		$this->bindings[$interface] = $concrete;
+	}
 
 	/**
 	 * Retrieves an instance of a class from the container.
@@ -94,16 +109,52 @@ class Container implements ContainerInterface
 				}
 
 				if ($type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
-					return $this->get($type->getName());
+					// Vérifie si une liaison existe pour l'interface demandée
+					if (isset($this->bindings[$type->getName()][$id])) {
+						// Récupérez l'implémentation associée à ce contexte
+						$concrete = $this->bindings[$type->getName()][$id];
+						// Résolvez l'implémentation concrète associée à l'interface
+						return $this->resolve($concrete);
+					} elseif (class_exists($id)) {
+						// Si le nom de classe est valide, résout l'interface normalement
+						return $this->get($type->getName());
+					} else {
+						// Sinon, lancez une exception ou traitez l'erreur selon vos besoins
+						throw new \Exception("Class {$id} not found");
+					}
 				}
 
 				throw new ContainerException(
-					"Invalide param {$name} in {$id} constructor"
+					"Invalid param {$name} in {$id} constructor"
 				);
 			},
 			$constructorParams
 		);
 
 		return $reflectClass->newInstanceArgs($dependencies);
+	}
+
+	/**
+	 * Adds a contextual binding to the container.
+	 * 
+	 * @param string $abstract - The abstract class to bind.
+	 * @param string $context - The context to bind the abstract class to.
+	 * @param string $concrete - The concrete class to bind to the abstract class.
+	 */
+	private function addContextualBinding(string $abstract, string $context, string $concrete): void
+	{
+		$this->bindings[$abstract][$context] = $concrete;
+	}
+
+	/**
+	 * Charge les fournisseurs de bindings depuis le fichier de configuration et les exécute.
+	 */
+	public function loadProviders(array $providers): void
+	{
+		foreach ($providers as $interface => $modules) {
+			foreach ($modules as $module => $concrete) {
+				$this->addContextualBinding($interface, $module, $concrete);
+			}
+		}
 	}
 }
