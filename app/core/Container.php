@@ -2,6 +2,7 @@
 
 namespace App\Core;
 
+use App\Core\Exception;
 use Psr\Container\ContainerInterface;
 use App\Exceptions\Container\ContainerException;
 
@@ -66,12 +67,12 @@ class Container implements ContainerInterface
 	public function resolve(string $id): mixed
 	{
 		if (!class_exists($id)) {
-			throw new ContainerException("Class {$id} not found");
+			throw new Exception("Class {$id} not found");
 		}
 
 		$reflectClass = new \ReflectionClass($id);
 		if (!$reflectClass->isInstantiable()) {
-			throw new ContainerException("Class {$id} is not instantiable");
+			throw new Exception("Class {$id} is not instantiable");
 		}
 
 		$constructor = $reflectClass->getConstructor();
@@ -116,7 +117,7 @@ class Container implements ContainerInterface
 					}
 				}
 
-				throw new ContainerException(
+				throw new \Exception(
 					"Invalid param {$name} in {$id} constructor"
 				);
 			},

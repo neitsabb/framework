@@ -1,8 +1,8 @@
-<?php 
+<?php
 
 namespace App\Core;
 
-class Exception 
+class Exception implements \Throwable
 {
 	/**
 	 * 
