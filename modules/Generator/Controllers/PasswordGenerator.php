@@ -3,15 +3,15 @@
 namespace Modules\Generator\Controllers;
 
 use App\Core\Request;
+use App\Core\Response;
 use App\Core\Controller;
-use Modules\Generator\Services\Formatter;
-
+use Modules\Formatter\Contracts\FormatterInterface;
 
 class PasswordGenerator extends Controller
 {
-	private Formatter $formatter;
+	private FormatterInterface $formatter;
 
-	public function __construct(Formatter $formatter)
+	public function __construct(FormatterInterface $formatter)
 	{
 		$this->formatter = $formatter;
 	}
@@ -35,7 +35,7 @@ class PasswordGenerator extends Controller
 		return $this->render('generator');
 	}
 
-	public function generate(Request $request)
+	public function generate(Request $request, Response $response)
 	{
 		$errors = [];
 
@@ -55,7 +55,7 @@ class PasswordGenerator extends Controller
 			$specialchars = $request->getBody('specialchars');
 
 			$password = $this->formatter
-				->format(options: [
+				->format(value: [
 					'length' => $length,
 					'lowercase' => $lowercase,
 					'uppercase' => $uppercase,
