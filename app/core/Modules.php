@@ -17,7 +17,9 @@ class Modules
     public function __construct()
     {
         $this->path = Application::$rootDir . Application::$app->config->get('modules.path');
+
         $this->loadModules();
+        $this->registerServices();
     }
 
     /**
@@ -46,7 +48,7 @@ class Modules
      */
     private function isValidModule(string $module): bool
     {
-        return !in_array($module, ['.', '..']) && is_dir($this->path . DIRECTORY_SEPARATOR . $module);
+        return !in_array($module, ['.', '..']);
     }
 
     /**
@@ -57,16 +59,19 @@ class Modules
      */
     private function loadModule($moduleName): void
     {
-        $modulePath = $this->path . DIRECTORY_SEPARATOR . $moduleName;
-        $components = [];
-
-        foreach (['Controllers', 'Models', 'Views'] as $component) {
-            $components[$component] = $this->loadComponent($modulePath . DIRECTORY_SEPARATOR . $component);
-        }
-
         // If the module name is not a Pascal case string, throw an exception
         if (!preg_match('/^[A-Z][a-zA-Z0-9]*$/', $moduleName)) {
             throw new \Exception("Invalid module name: $moduleName. Module name must be a Pascal case string.");
+        }
+
+        $modulePath = $this->path . DIRECTORY_SEPARATOR . $moduleName;
+        $components = [];
+
+        $folders = scandir($modulePath);
+        foreach ($folders as $component) {
+            if ($this->isValidModule($component)) {
+                $components[$component] = $this->loadComponent($modulePath . DIRECTORY_SEPARATOR . $component);
+            }
         }
 
         $this->modules[$moduleName] = $components;
@@ -95,6 +100,17 @@ class Modules
         }
 
         return $loadedComponent;
+    }
+
+    /**
+     * Registers services for each module.
+     * 
+     * @return void
+     */
+    private function registerServices(): void
+    {
+        $providers = Application::$app->config->get('modules.providers');
+        Application::$container->loadProviders($providers);
     }
 
     public function get($module): ?array

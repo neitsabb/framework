@@ -1,5 +1,11 @@
 <?php
 
+use Modules\Generator\Services\PasswordFormatter;
+use Modules\Formatter\Contracts\FormatterInterface;
+use Modules\Generator\Controllers\PasswordGenerator;
+use Modules\Generator\Controllers\PhoneGenerator;
+use Modules\Generator\Services\PhoneFormatter;
+
 return [
 
 	/**
@@ -11,4 +17,11 @@ return [
 	 * 
 	 */
 	'path' => '/modules',
+
+	'providers' => [
+		FormatterInterface::class => [
+			PasswordGenerator::class => PasswordFormatter::class,
+			PhoneGenerator::class => PhoneFormatter::class
+		],
+	]
 ];

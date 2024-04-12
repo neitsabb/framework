@@ -61,16 +61,16 @@ class Router
 
 		if (is_string($callback)) {
 			if (method_exists($callback, '__invoke')) {
-				$controller = new $callback;
+				$controller = Application::$container->get($callback);
 				Application::$app->controller = $controller;
-				return $controller($this->request);
+				return $controller($this->request, $this->response);
 			} else {
 				$callback = explode('@', $callback);
 				$controller = Application::$container->get($callback[0]);
 				Application::$app->controller = $controller;
 				$controller->action = $callback[1];
 				if (method_exists($controller, $callback[1])) {
-					return $controller->{$callback[1]}($this->request);
+					return $controller->{$callback[1]}($this->request, $this->response);
 				} else {
 					return Exception::throw('Method not found in controller', 404);
 				}
@@ -109,6 +109,8 @@ class Router
 		foreach (Application::$app->modules->all() as $moduleName => $modules) {
 			foreach ($modules as $componentName => $component) {
 				foreach ($component as $controllerName) {
+					if ($componentName !== 'Controllers') continue;
+
 					// Transformer le nom du contrôleur en namespace
 					$controllerNamespace = 'Modules\\' . $moduleName . '\\' . $componentName . '\\' . $controllerName;
 					$routes = $this->getControllerRoutes($controllerNamespace);
