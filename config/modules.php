@@ -18,6 +18,23 @@ return [
 	 */
 	'path' => '/modules',
 
+
+	/**
+	 * Array of providers to be binding.
+	 * 
+	 * @example 
+	 * 'providers' => [
+	 * 		Interface::class => [ 
+	 * 			Concrete::class => Implementation::class 
+	 * 		]
+	 * ]
+	 * 'providers' => [
+	 * 		FormatterInterface::class => [
+	 * 			PasswordGenerator::class => PasswordFormatter::class,
+	 * 			PhoneGenerator::class => PhoneFormatter::class
+	 * 		]
+	 * ]
+	 */
 	'providers' => [
 		FormatterInterface::class => [
 			PasswordGenerator::class => PasswordFormatter::class,

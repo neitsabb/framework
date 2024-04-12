@@ -103,7 +103,7 @@ class Modules
     }
 
     /**
-     * Registers services for each module.
+     * Registers the services of the modules by loading the providers specified in the modules configuration file.
      * 
      * @return void
      */
@@ -113,11 +113,22 @@ class Modules
         Application::$container->loadProviders($providers);
     }
 
+    /**
+     * Gets the components of a module by its name.
+     * 
+     * @param string $module - The name of the module to get its components
+     * @return array|null - Returns an array of components if the module exists, otherwise null
+     */
     public function get($module): ?array
     {
         return $this->modules[$module] ?? null;
     }
 
+    /**
+     * Gets all the modules.
+     * 
+     * @return array - Returns an array of all the modules
+     */
     public function all(): array
     {
         return $this->modules;

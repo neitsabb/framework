@@ -39,14 +39,19 @@ class Router
 	}
 
 
+
 	/**
-	 * The function resolves a route callback based on the request path and method, handling different
-	 * callback types including invokable classes and controller methods.
+	 * resolves a route callback based on the request method and path, invoking the
+	 * appropriate controller method or returning a 404 error if not found.
 	 * 
-	 * @return array|string|null The `resolve()` function returns an array, string, or null value. If the
-	 * callback is not found in the routes, it sets the status code to 404 and returns the string 'Not
-	 * Found 404'. If the callback is a string, it checks if it is a callable class or a controller method
-	 * and executes it accordingly. If the callback is a callable function, it directly calls the callback
+	 * @return array|string|null The `resolve()` function returns an array, string, or null value. The
+	 * specific return value depends on the logic within the function:
+	 * - If the route callback is a string, the function checks if the string is an invokable class or a
+	 * controller method. If the string is an invokable class, the function creates an instance of the
+	 * class and invokes the `__invoke()` method. If the string is a controller method, the function creates an instance
+	 * of the controller class and invokes the specified method.
+	 * - If the route callback is a closure, the function invokes the closure.
+	 * - If the route callback is not found, the function returns a 404 error.
 	 */
 	public function resolve(): array|string|null
 	{

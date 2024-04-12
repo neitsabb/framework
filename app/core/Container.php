@@ -17,17 +17,6 @@ class Container implements ContainerInterface
 	private array $instances = [];
 
 	/**
-	 * Binds an interface to a concrete class.
-	 * 
-	 * @param string $interface - The interface to bind.
-	 * @param string $concrete - The concrete class to bind to the interface.
-	 */
-	public function bind(string $interface, string $concrete): void
-	{
-		$this->bindings[$interface] = $concrete;
-	}
-
-	/**
 	 * Retrieves an instance of a class from the container.
 	 * 
 	 * @param string $id - The class name to retrieve from the container.
@@ -65,11 +54,14 @@ class Container implements ContainerInterface
 		$this->instances[$id] = $concrete;
 	}
 
+
 	/**
-	 * Resolves a class from the container.
+	 * Instantiate a class by resolving its dependencies through constructor injection.
 	 * 
-	 * @param string $id - The class name to resolve from the container.
-	 * @return mixed - The resolved class instance.
+	 * @param string id The class name to resolve from the container.
+	 * 
+	 * @return mixed returns an instance of the class specified after resolving its dependencies if any. If the class has a constructor with parameters,
+	 * it will attempt to resolve those dependencies recursively before instantiating the class.
 	 */
 	public function resolve(string $id): mixed
 	{
@@ -147,7 +139,9 @@ class Container implements ContainerInterface
 	}
 
 	/**
-	 * Charge les fournisseurs de bindings depuis le fichier de configuration et les exécute.
+	 * Load the providers from the modulesconfiguration file and bind them to the container.
+	 * 
+	 * @param array $providers - The providers to load from the modules configuration file.
 	 */
 	public function loadProviders(array $providers): void
 	{

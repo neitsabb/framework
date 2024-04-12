@@ -5,14 +5,18 @@ namespace App\Core;
 
 class Request
 {
+    /**
+     * @var array $body - The body of the request.
+     */
     public array $body = [];
+
+    /**
+     * @var array $params - The parameters of the request.
+     */
     public array $params = [];
 
     /**
-     * 
-     * This PHP function sanitizes and stores the values from the request and 
-     * superglobal arrays in the $this->body array.
-     * 
+     * Checks if the request is a GET or POST request and sanitizes the input.
      */
     public function __construct()
     {
@@ -31,6 +35,11 @@ class Request
         }
     }
 
+    /**
+     * Retrieves all the values from the body array.
+     * 
+     * @return array The body array.
+     */
     public function all(): array
     {
         return $this->body;
