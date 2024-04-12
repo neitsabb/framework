@@ -15,6 +15,7 @@
 		<div class="rounded-lg ring-1 ring-slate-700/50 shadow-xl mt-6 p-4 flex justify-between items-center">
 			<label class="text-slate-100/90 font-medium text-sm">Pays</label>
 			<select type="text" name="country" class="bg-slate-700/70 text-white text-md text-shadow font-medium py-2 px-4 rounded-lg shadow-xl mt-4">
+				<option value="be">Belgique</option>
 				<option value="fr">France</option>
 				<option value="us">États-Unis</option>
 				<option value="uk">Royaume-Uni</option>

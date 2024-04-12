@@ -12,13 +12,31 @@ class PhoneFormatter implements FormatterInterface
 		$indicator = '';
 		$phone = '';
 
-		if ($value == 'fr') {
-			$indicator = '+33';
-		} else if ($value == 'be') {
-			$indicator = '+32';
+		switch ($value) {
+			case 'fr':
+				$indicator = '+33';
+				break;
+			case 'be':
+				$indicator = '+32';
+				break;
+			case 'us':
+				$indicator = '+1';
+				break;
+			case 'uk':
+				$indicator = '+44';
+				break;
+			case 'de':
+				$indicator = '+49';
+				break;
+			case 'es':
+				$indicator = '+34';
+				break;
+			default:
+				$indicator = '+33';
+				break;
 		}
 
-		$phone = $indicator . ' ' . rand(600000000, 699999999);
+		$phone = $indicator . ' ' . implode(' ', str_split(rand(400000000, 699999999), 2));
 
 		return $phone;
 	}
