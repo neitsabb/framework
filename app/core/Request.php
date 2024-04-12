@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Core;
 
@@ -9,10 +9,10 @@ class Request
     public array $params = [];
 
     /**
-	 * 
+     * 
      * This PHP function sanitizes and stores the values from the request and 
      * superglobal arrays in the $this->body array.
-	 * 
+     * 
      */
     public function __construct()
     {
@@ -31,6 +31,22 @@ class Request
         }
     }
 
+    public function all(): array
+    {
+        return $this->body;
+    }
+
+    /**
+     * Retrieves the value of a key from the body array.
+     * 
+     * @param string key The key to retrieve the value from.
+     * @return mixed The value of the key from the body array.
+     */
+    public function getBody(string $key)
+    {
+        return $this->body[$key] ?? null;
+    }
+
     /**
      * Retrieves the current URL path from the `['REQUEST_URI']`
      * variable and removes any query parameters.
@@ -39,10 +55,10 @@ class Request
      */
     public function getPath(): string
     {
-        $path = $_SERVER['REQUEST_URI']; 
-        $position = strpos($path, '?'); 
-    
-        return $position ? substr($path, 0, $position) : $path; 
+        $path = $_SERVER['REQUEST_URI'];
+        $position = strpos($path, '?');
+
+        return $position ? substr($path, 0, $position) : $path;
     }
 
     /**
@@ -64,7 +80,7 @@ class Request
      */
     public function getMethod(): string
     {
-        return strtoupper($_SERVER['REQUEST_METHOD']); 
+        return strtoupper($_SERVER['REQUEST_METHOD']);
     }
 
     /**
@@ -81,7 +97,7 @@ class Request
      * Check if the HTTP method used is POST.
      * 
      * @return bool indicating whether the HTTP request method is 'POST' or not.
-	 */
+     */
     public function isPost(): bool
     {
         return $this->getMethod() === 'POST';
@@ -99,13 +115,13 @@ class Request
         return $this;
     }
 
-   /**
-    * Returns an array of parameters or null if no parameters are set.
-    * 
-    * @return array an array of parameters. If no parameters are set, the function returns null.
-    */
+    /**
+     * Returns an array of parameters or null if no parameters are set.
+     * 
+     * @return array an array of parameters. If no parameters are set, the function returns null.
+     */
     public function getParams(): array
     {
         return $this->params ?? null;
-    } 
+    }
 }
