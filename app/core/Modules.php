@@ -64,6 +64,16 @@ class Modules
             throw new \Exception("Invalid module name: $moduleName. Module name must be a Pascal case string.");
         }
 
+        // If the module name is not a directory, throw an exception
+        if (!is_dir($this->path . DIRECTORY_SEPARATOR . $moduleName)) {
+            throw new \Exception("Module $moduleName does not exist.");
+        }
+
+        // If( the module name is already loaded, return)
+        if (isset($this->modules[$moduleName])) {
+            return;
+        }
+
         $modulePath = $this->path . DIRECTORY_SEPARATOR . $moduleName;
         $components = [];
 
