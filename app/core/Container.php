@@ -2,9 +2,9 @@
 
 namespace App\Core;
 
-use App\Core\Exception;
 use Psr\Container\ContainerInterface;
 use App\Exceptions\Container\ContainerException;
+use App\Exceptions\Container\NotFoundException;
 
 class Container implements ContainerInterface
 {
@@ -16,6 +16,12 @@ class Container implements ContainerInterface
 	 * @var array $instances - Contains the instances of dependencies.
 	 */
 	private array $instances = [];
+
+	private const CLASS_NOT_FOUND_MESSAGE = "Class %s not found";
+	private const CLASS_NOT_INSTANTIABLE_MESSAGE = "Class %s is not instantiable";
+	private const MISSING_TYPE_HINT_MESSAGE = "Missing type hint for parameter %s in %s constructor";
+	private const UNION_TYPE_NOT_SUPPORTED_MESSAGE = "Union type is not supported for parameter %s in %s constructor";
+	private const INVALID_PARAM_MESSAGE = "Invalid param %s in %s constructor";
 
 	/**
 	 * Retrieves an instance of a class from the container.
@@ -67,12 +73,12 @@ class Container implements ContainerInterface
 	public function resolve(string $id): mixed
 	{
 		if (!class_exists($id)) {
-			throw new Exception("Class {$id} not found");
+			throw new NotFoundException(sprintf(self::CLASS_NOT_FOUND_MESSAGE, $id));
 		}
 
 		$reflectClass = new \ReflectionClass($id);
 		if (!$reflectClass->isInstantiable()) {
-			throw new Exception("Class {$id} is not instantiable");
+			throw new ContainerException(sprintf(self::CLASS_NOT_INSTANTIABLE_MESSAGE, $id));
 		}
 
 		$constructor = $reflectClass->getConstructor();
@@ -91,13 +97,13 @@ class Container implements ContainerInterface
 				$type = $param->getType();
 				if (!$type) {
 					throw new ContainerException(
-						"Missing type hint for parameter {$name} in {$id} constructor"
+						sprintf(self::MISSING_TYPE_HINT_MESSAGE, $name, $id)
 					);
 				}
 
 				if ($type instanceof \ReflectionUnionType) {
 					throw new ContainerException(
-						"Union type is not supported for parameter {$name} in {$id} constructor"
+						sprintf(self::UNION_TYPE_NOT_SUPPORTED_MESSAGE, $name, $id)
 					);
 				}
 
@@ -118,7 +124,7 @@ class Container implements ContainerInterface
 				}
 
 				throw new \Exception(
-					"Invalid param {$name} in {$id} constructor"
+					sprintf(self::INVALID_PARAM_MESSAGE, $name, $id)
 				);
 			},
 			$constructorParams
