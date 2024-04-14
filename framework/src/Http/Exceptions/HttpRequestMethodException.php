@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions\Http;
+namespace Neitsab\Framework\Http\Exceptions;
 
 class HttpRequestMethodException extends HttpException
 {

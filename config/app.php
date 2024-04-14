@@ -48,7 +48,7 @@ return [
 	 */
 	'asset_url' => env('ASSET_URL'),
 
-
+	'root' => env('APP_ROOT', dirname(__DIR__)),
 	/**
 	 * Application timezone
 	 * 
@@ -96,5 +96,5 @@ return [
 	 */
 	'key' => env('APP_KEY'),
 
-	'providers' => []
+
 ];

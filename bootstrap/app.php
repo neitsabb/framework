@@ -1,15 +1,17 @@
 <?php
 
-use App\Core\ConnectionFactory;
-use App\Core\Controller;
-use App\Core\Kernel;
-use App\Core\Router;
-use App\Core\Modules;
-use League\Container\Container;
-use App\Contracts\RouterInterface;
-use App\Core\Config;
+use Neitsab\Framework\Core\Config;
+use Neitsab\Framework\Http\Kernel;
+use Neitsab\Framework\Core\Modules;
+use Neitsab\Framework\Router\Router;
+use Neitsab\Framework\Router\RouterInterface;
+use Neitsab\Framework\Database\ConnectionFactory;
+use Neitsab\Framework\Http\Controller\Controller;
 
-$container = new Container();
+/**
+ * Create the container of the application
+ */
+$container = new League\Container\Container();
 $container->delegate(new League\Container\ReflectionContainer(true));
 
 /**
@@ -26,7 +28,7 @@ $container->add(Modules::class)->addArguments([
 $container->add(
 	RouterInterface::class,
 	Router::class
-)->addArgument(Modules::class);
+)->addArguments([Config::class, Modules::class]);
 
 $container->add(Kernel::class)
 	->addArgument(RouterInterface::class)

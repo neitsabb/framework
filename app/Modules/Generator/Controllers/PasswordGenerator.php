@@ -2,10 +2,12 @@
 
 namespace Modules\Generator\Controllers;
 
-use App\Core\Request;
-use App\Core\Response;
-use App\Core\Controller;
+use Neitsab\Framework\Http\Request;
+use Neitsab\Framework\Http\Response;
+use Neitsab\Framework\Http\Controller\Controller;
+
 use Modules\Generator\Services\PasswordFormatter;
+
 
 class PasswordGenerator extends Controller
 {

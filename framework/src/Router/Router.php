@@ -1,24 +1,42 @@
 <?php
 
-namespace App\Core;
+namespace Neitsab\Framework\Router;
 
-use App\Contracts\RouterInterface;
+
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use App\Exceptions\Http\HttpException;
-use App\Exceptions\Http\HttpRequestMethodException;
+use Neitsab\Framework\Core\Config;
 use Psr\Container\ContainerInterface;
+
+use Neitsab\Framework\Core\Modules;
+use Neitsab\Framework\Http\Request;
+use Neitsab\Framework\Http\Exceptions\HttpException;
+use Neitsab\Framework\Http\Exceptions\HttpRequestMethodException;
+use Neitsab\Framework\Router\RouterInterface;
 
 class Router implements RouterInterface
 {
 
-	/**
+	/** 
 	 * @var Modules $modules
 	 */
 	private Modules $modules;
 
-	public function __construct(Modules $modules)
-	{
+	/**
+	 * @var array $routes
+	 */
+	private array $routes = [];
+
+	/**
+	 * @var Config $config
+	 */
+	private Config $config;
+
+	public function __construct(
+		Config $config,
+		Modules $modules
+	) {
+		$this->config = $config;
 		$this->modules = $modules;
 	}
 
@@ -62,12 +80,15 @@ class Router implements RouterInterface
 	private function createDispatcher(): Dispatcher
 	{
 		return \FastRoute\simpleDispatcher(function (RouteCollector $r) {
-			$this->loadRoutes($r);
+			$this->routes = $this->loadRoutes($r);
+			dd($this->routes);
 		});
 	}
 
-	public function loadRoutes(RouteCollector $router): void
+	public function loadRoutes(RouteCollector $router): array
 	{
+		$loadedRoutes = [];
+
 		foreach ($this->modules->all() as $moduleName => $modules) {
 			foreach ($modules as $componentName => $component) {
 				foreach ($component as $controllerName) {
@@ -76,15 +97,19 @@ class Router implements RouterInterface
 					}
 
 					$controllerNamespace = 'Modules\\' . $moduleName . '\\' . $componentName . '\\' . $controllerName;
+
 					if (class_exists($controllerNamespace)) {
 						$reflectionClass = new \ReflectionClass($controllerNamespace);
 						if ($reflectionClass->hasMethod('routes')) {
 							$routes = $controllerNamespace::routes();
 							foreach ($routes as $action => $route) {
 								if ($reflectionClass->hasMethod('__invoke')) {
-									// Si le contrôleur est invocable, utilisez simplement la route spécifiée
+									$loadedRoutes[$route['method']][$route['path']] = $controllerNamespace;
+
 									$router->addRoute($route['method'], $route['path'], $controllerNamespace);
 								} else {
+									$loadedRoutes[$route['method']][$route['path']] = [$controllerNamespace, $action];
+
 									// Si le contrôleur n'est pas invocable, utilisez la méthode spécifiée comme action
 									$router->addRoute($route['method'], $route['path'], [$controllerNamespace, $action]);
 								}
@@ -94,5 +119,7 @@ class Router implements RouterInterface
 				}
 			}
 		}
+
+		return $loadedRoutes;
 	}
 }

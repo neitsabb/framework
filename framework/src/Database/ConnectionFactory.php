@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Core;
+namespace Neitsab\Framework\Database;
 
 use Doctrine\DBAL\Connection;
+
+use Neitsab\Framework\Core\Config;
 
 class ConnectionFactory
 {

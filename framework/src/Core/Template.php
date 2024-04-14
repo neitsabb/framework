@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Core;
+namespace Neitsab\Framework\Core;
+
 
 class Template
 {

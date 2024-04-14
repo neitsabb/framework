@@ -5,12 +5,12 @@
 
 define('APP_ROOT', dirname(__DIR__));
 
-require APP_ROOT . '/vendor/autoload.php';
+// require APP_ROOT . '/vendor/autoload.php';
 
-$app = require APP_ROOT . '/bootstrap/app.php';
+// $app = require APP_ROOT . '/bootstrap/app.php';
 
-$console = $app->get(App\Core\Console::class);
+// $console = $app->get(\Neitsab\Framework\Console\Kernel::class);
 
-$status = $console->handle();
+// $status = $console->handle();
 
 exit($status);

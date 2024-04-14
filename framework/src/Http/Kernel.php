@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Core;
-
-use App\Core\Response;
-use App\Contracts\RouterInterface;
+namespace Neitsab\Framework\Http;
 
 use Psr\Container\ContainerInterface;
-use App\Exceptions\Http\HttpException;
+
+use Neitsab\Framework\Router\RouterInterface;
+use Neitsab\Framework\Http\Exceptions\HttpException;
+
 
 class Kernel
 {
@@ -23,7 +23,6 @@ class Kernel
 	public function handle(Request $request): Response
 	{
 		try {
-			dd($this->container->get(\Doctrine\DBAL\Connection::class));
 			[$routeHandler, $vars] = $this->router->dispatch($request, $this->container);
 			$response = call_user_func_array($routeHandler, $vars);
 		} catch (\Exception $exception) {

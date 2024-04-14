@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Core;
+namespace Neitsab\Framework\Console;
 
-class Console
+class Kernel
 {
 	public function handle(): int
 	{

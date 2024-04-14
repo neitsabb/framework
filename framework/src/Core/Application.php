@@ -1,16 +1,7 @@
 <?php
 
-namespace App\Core;
+namespace Neitsab\Framework\Core;
 
-
-use App\Core\Theme;
-use App\Core\Config;
-use App\Core\Router;
-use App\Core\Modules;
-use App\Core\Request;
-use App\Core\Response;
-use App\Core\Container;
-use App\Core\FileCache;
 
 class Application
 {

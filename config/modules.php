@@ -16,7 +16,7 @@ return [
 	 * framework needs to load the modules of the application.
 	 * 
 	 */
-	'path' => '/modules',
+	'path' => '/app/modules',
 
 
 	/**
