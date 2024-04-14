@@ -1,6 +1,11 @@
 <?php
 
 declare(strict_types=1);
+
+use App\Core\Kernel;
+use App\Core\Request;
+use App\Core\Response;
+
 /**
  * The entry point of the application
  * 
@@ -15,27 +20,33 @@ define('APP_ROOT', $_ENV['APP_URL'] ?? dirname(__DIR__));
 
 require_once APP_ROOT . '/vendor/autoload.php';
 
+$kernel = new Kernel();
 
-// Load environment variables
-$dotenv = Dotenv\Dotenv::createImmutable(APP_ROOT);
-$dotenv->load();
+$response = $kernel->handle(
+	Request::capture()
+);
 
-// Require the helpers
-require_once APP_ROOT . '/app/helpers/utils.php';
+$response->send();
+// // Load environment variables
+// $dotenv = Dotenv\Dotenv::createImmutable(APP_ROOT);
+// $dotenv->load();
 
-// Set the error reporting level
-if (env('APP_DEBUG')) {
-	ini_set('display_errors', 1);
-	ini_set('display_startup_errors', 1);
-	error_reporting(E_ALL);
-}
+// // Require the helpers
+// require_once APP_ROOT . '/app/helpers/utils.php';
 
-// Bootstrap the application
-$app = new App\Core\Application(APP_ROOT);
+// // Set the error reporting level
+// if (env('APP_DEBUG')) {
+// 	ini_set('display_errors', 1);
+// 	ini_set('display_startup_errors', 1);
+// 	error_reporting(E_ALL);
+// }
 
-// Run the application
-try {
-	$app->run();
-} catch (Exception $e) {
-	echo "Une erreur s'est produite: " . $e->getMessage();
-}
+// // Bootstrap the application
+// $app = new App\Core\Application(APP_ROOT);
+
+// // Run the application
+// try {
+// 	$app->run();
+// } catch (Exception $e) {
+// 	echo "Une erreur s'est produite: " . $e->getMessage();
+// }
