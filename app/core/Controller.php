@@ -4,6 +4,8 @@ namespace App\Core;
 
 abstract class Controller
 {
+	public array $views;
+
 	/**
 	 * @var string $layout - The layout to use for the controller.
 	 */

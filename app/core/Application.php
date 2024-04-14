@@ -10,6 +10,7 @@ use App\Core\Modules;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Container;
+use App\Core\FileCache;
 
 class Application
 {
@@ -55,6 +56,11 @@ class Application
 	public Template $template;
 
 	/**
+	 * @var FileCache $cache - handles caching data to improve the performance of the application.
+	 */
+	public FileCache $cache;
+
+	/**
 	 * @var Request $request - handles sanitizing and storing request values, retrieving URL paths, and checking HTTP request methods.
 	 */
 	public Request $request;
@@ -97,8 +103,12 @@ class Application
 		// Load the theme
 		$this->theme = new Theme();
 		$this->template = new Template();
+
+		// Load the cache 
+		$this->cache = new FileCache();
+		// dd($this->cache);
+
 		// Load the request, response, and router
-		$this->request = new Request();
 		$this->request = new Request();
 		$this->response = new Response();
 		$this->router = new Router($this->request, $this->response);
@@ -114,6 +124,15 @@ class Application
 		echo $this->router->resolve();
 	}
 
+	/**
+	 * Sets the controller property of the application.
+	 * 
+	 * @param Controller $controller - The controller object that will be set as the controller property.
+	 */
+	public function setController(Controller $controller): void
+	{
+		$this->controller = $controller;
+	}
 
 	/**
 	 * The getRoutes method returns the routes defined in the router.

@@ -11,9 +11,15 @@ class PasswordGenerator extends Controller
 {
 	private FormatterInterface $formatter;
 
+	public array $views;
+
 	public function __construct(FormatterInterface $formatter)
 	{
 		$this->formatter = $formatter;
+
+		$this->views = [
+			'generator'
+		];
 	}
 
 	public static function routes()
@@ -29,6 +35,8 @@ class PasswordGenerator extends Controller
 			]
 		];
 	}
+
+
 
 	public function index()
 	{

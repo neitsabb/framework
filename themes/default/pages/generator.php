@@ -1,7 +1,7 @@
 <div class="max-w-xl mx-auto bg-slate-800 rounded-lg p-8 ring-1 ring-slate-700/70 shadow-xl">
 	<h1 class="text-white text-lg font-semibold ">Générateur de mot de passe</h1>
 	<p class="text-slate-400 text-sm mt-1 pb-4 border-b border-dashed border-slate-700/50">
-		Un générateur de mot de passe simple pour créer des mots de passe sécurisés.
+		Un générateurdddd de mot de passe simple pour créer des mots de passe sécurisés.
 	</p>
 	<?php if (isset($password)) : ?>
 		<div class="rounded-lg ring-1 ring-slate-700/50 shadow-xl mt-6 p-4">

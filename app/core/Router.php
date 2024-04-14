@@ -24,6 +24,11 @@ class Router
 	protected Response $response;
 
 	/**
+	 * @var FileCache $cache
+	 */
+	protected FileCache $cache;
+
+	/**
 	 * The constructor initializes the request and response objects and loads the routes.
 	 * 
 	 * @param Request $request - The request object that contains information about the current request.
@@ -35,6 +40,7 @@ class Router
 		$this->request = $request;
 		$this->response = $response;
 
+		$this->cache = Application::$app->cache;
 		$this->loadRoutes();
 	}
 
@@ -57,6 +63,12 @@ class Router
 	{
 		$path = $this->request->getPath();
 		$method = $this->request->getMethod();
+		$cacheKey = "{$method}_{$path}";
+
+		// if ($this->cache->exists($cacheKey)) {
+		// 	return $this->cache->get($cacheKey);
+		// }
+
 		$callback = $this->routes[$method][$path] ?? false;
 
 		if (!$callback) {
@@ -64,25 +76,65 @@ class Router
 			return 'Not Found 404';
 		}
 
+		$result = $this->processRouteCallback($callback);
+
+		$fileViewName = Application::$app->controller->views;
+		// $fileViewName = Application::$rootDir . '/themes/default/pages/' . $fileViewName[0] . '.php';
+
+		// if ($this->isViewModified($fileViewName, $cacheKey)) {
+		// 	$result = $this->processRouteCallback($callback);
+		// 	$this->cache->set($cacheKey, $result, 60);
+		// }
+
+		return $result;
+	}
+
+	/**
+	 * Check if the view source file has been modified since the cache was created.
+	 * 
+	 * @param string $viewPath The path to the view source file.
+	 * @param string $cacheKey The cache key associated with the view.
+	 * @return bool True if the view source has been modified, false otherwise.
+	 */
+	protected function isViewModified(string $viewPath, string $cacheKey): bool
+	{
+		// Get the modification time of the view source file
+		$viewModifiedTime = filemtime($viewPath);
+		// Get the modification time of the cache file
+		$cacheModifiedTime = $this->cache->getCacheFileModifiedTime($cacheKey);
+
+		// If the view source has been modified since the cache was created, return true
+		return $viewModifiedTime > $cacheModifiedTime;
+	}
+
+	/**
+	 * Process the route callback and return the result.
+	 *
+	 * @param mixed $callback The callback to be processed.
+	 * @return array|string|null The result of processing the callback.
+	 */
+	protected function processRouteCallback($callback): array|string|null
+	{
 		if (is_string($callback)) {
 			if (method_exists($callback, '__invoke')) {
 				$controller = Application::$container->get($callback);
-				Application::$app->controller = $controller;
+				Application::$app->setController($controller);
 				return $controller($this->request, $this->response);
 			} else {
 				$callback = explode('@', $callback);
 				$controller = Application::$container->get($callback[0]);
-				Application::$app->controller = $controller;
+				Application::$app->setController($controller);
 				$controller->action = $callback[1];
-				if (method_exists($controller, $callback[1])) {
-					return $controller->{$callback[1]}($this->request, $this->response);
+				$method = $callback[1];
+				if (method_exists($controller, $method)) {
+					return call_user_func([$controller, $method], $this->request, $this->response);
 				} else {
 					return Exception::throw('Method not found in controller', 404);
 				}
 			}
 		}
 
-		return $callback($this->request);
+		return call_user_func($callback, $this->request);
 	}
 
 	/**
