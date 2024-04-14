@@ -5,6 +5,11 @@ namespace App\Core;
 class Modules
 {
     /**
+     * @var Config $config - The configuration object
+     */
+    private Config $config;
+
+    /**
      * @var string $path - The path to the modules directory
      */
     private string $path;
@@ -14,12 +19,13 @@ class Modules
      */
     private array $modules = [];
 
-    public function __construct()
+    public function __construct(string $rootDir, Config $config)
     {
-        $this->path = Application::$rootDir . Application::$app->config->get('modules.path');
+        $this->config = $config;
+
+        $this->path = $rootDir . $this->config->get('modules.path');
 
         $this->loadModules();
-        $this->registerServices();
     }
 
     /**
@@ -112,16 +118,6 @@ class Modules
         return $loadedComponent;
     }
 
-    /**
-     * Registers the services of the modules by loading the providers specified in the modules configuration file.
-     * 
-     * @return void
-     */
-    private function registerServices(): void
-    {
-        $providers = Application::$app->config->get('modules.providers');
-        Application::$container->loadProviders($providers);
-    }
 
     /**
      * Gets the components of a module by its name.

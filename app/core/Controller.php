@@ -2,6 +2,8 @@
 
 namespace App\Core;
 
+use Psr\Container\ContainerInterface;
+
 abstract class Controller
 {
 	public array $views;
@@ -15,6 +17,11 @@ abstract class Controller
 	 * @var array $middlewares - The middlewares to use for the controller.
 	 */
 	public array $middlewares = [];
+
+	/**
+	 * @var ContainerInterface $container - The container to use for the controller.
+	 */
+	protected ?ContainerInterface $container = null;
 
 	/**
 	 * Add routes to the controller
@@ -46,6 +53,11 @@ abstract class Controller
 	protected function registerMiddleware(array $middlewares)
 	{
 		$this->middlewares[] = $middlewares;
+	}
+
+	public function setContainer(ContainerInterface $container)
+	{
+		$this->container = $container;
 	}
 
 	/**

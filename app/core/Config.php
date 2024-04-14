@@ -1,8 +1,7 @@
-<?php 
+<?php
 
 namespace App\Core;
 
-use App\Core\Application;
 
 class Config
 {
@@ -11,17 +10,17 @@ class Config
 	 */
 	protected array $settings = [];
 
-	public function __construct()
+	public function __construct(string $rootDir)
 	{
-		$files = scandir(Application::$rootDir . '/config');
+		$files = scandir($rootDir . '/config');
 
 		foreach ($files as $file) {
-			if ($file === '.' || $file === '..' || is_dir(Application::$rootDir . "/config/$file")) {
+			if ($file === '.' || $file === '..' || is_dir($rootDir . "/config/$file")) {
 				continue;
 			}
 
 			$key = pathinfo($file, PATHINFO_FILENAME);
-			$config = require Application::$rootDir . "/config/$file";
+			$config = require $rootDir . "/config/$file";
 
 			// Merge the configuration with existing settings
 			$this->mergeConfig($this->settings, $key, $config);
@@ -89,7 +88,7 @@ class Config
 			$settings[$key] = $config;
 		}
 	}
-	
+
 	/**
 	 * The _get function in PHP retrieves a value from an array using a dot-separated key.
 	 * 
