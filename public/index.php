@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Core\Kernel;
 use App\Core\Request;
-use App\Core\Response;
+
 
 /**
  * The entry point of the application
@@ -20,7 +20,17 @@ define('APP_ROOT', $_ENV['APP_URL'] ?? dirname(__DIR__));
 
 require_once APP_ROOT . '/vendor/autoload.php';
 
-$kernel = new Kernel();
+$app = require_once APP_ROOT . '/bootstrap/app.php';
+
+$dotenv = new Symfony\Component\Dotenv\Dotenv();
+$dotenv->load(APP_ROOT . '/.env');
+
+
+// Require the helpers
+require_once APP_ROOT . '/app/helpers/utils.php';
+
+
+$kernel = $app->get(Kernel::class);
 
 $response = $kernel->handle(
 	Request::capture()
@@ -28,11 +38,6 @@ $response = $kernel->handle(
 
 $response->send();
 // // Load environment variables
-// $dotenv = Dotenv\Dotenv::createImmutable(APP_ROOT);
-// $dotenv->load();
-
-// // Require the helpers
-// require_once APP_ROOT . '/app/helpers/utils.php';
 
 // // Set the error reporting level
 // if (env('APP_DEBUG')) {
