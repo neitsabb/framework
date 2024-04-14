@@ -25,6 +25,17 @@ class Request
             $_SERVER
         );
     }
+
+    public function method(): string
+    {
+        return strtoupper($this->server['REQUEST_METHOD']);
+    }
+
+    public function uri(): string
+    {
+        return strtok($this->server['REQUEST_URI'], '?');
+    }
+
     // /**
     //  * @var array $body - The body of the request.
     //  */
