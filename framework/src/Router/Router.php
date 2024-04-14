@@ -81,7 +81,6 @@ class Router implements RouterInterface
 	{
 		return \FastRoute\simpleDispatcher(function (RouteCollector $r) {
 			$this->routes = $this->loadRoutes($r);
-			dd($this->routes);
 		});
 	}
 

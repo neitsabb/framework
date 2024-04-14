@@ -9,9 +9,16 @@ class Config
 	 */
 	protected array $settings = [];
 
+	/**
+	 * @var string $path - The path to the configuration files
+	 */
+	protected string $path;
+
 	public function __construct(string $rootDir)
 	{
-		$files = scandir($rootDir . '/config');
+		$this->path = $rootDir . '/app/config';
+
+		$files = scandir($this->path);
 
 		foreach ($files as $file) {
 			if ($file === '.' || $file === '..' || is_dir($rootDir . "/config/$file")) {
@@ -19,7 +26,7 @@ class Config
 			}
 
 			$key = pathinfo($file, PATHINFO_FILENAME);
-			$config = require $rootDir . "/config/$file";
+			$config = require $this->path . DIRECTORY_SEPARATOR . $file;
 
 			// Merge the configuration with existing settings
 			$this->mergeConfig($this->settings, $key, $config);
