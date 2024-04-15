@@ -60,14 +60,14 @@ abstract class Controller
 		$this->container = $container;
 	}
 
-	/**
-	 * Render a view with the layout.
-	 * 
-	 * @param string $view - The view to render.
-	 * @param array $params - The parameters to pass to the view
-	 */
-	protected function render(string $view, array $params = [])
-	{
-		return Application::$app->template->build($view, $params, $this->layout);
-	}
+	// /**
+	//  * Render a view with the layout.
+	//  * 
+	//  * @param string $view - The view to render.
+	//  * @param array $params - The parameters to pass to the view
+	//  */
+	// protected function render(string $view, array $params = [])
+	// {
+	// 	return Application::$app->template->build($view, $params, $this->layout);
+	// }
 }

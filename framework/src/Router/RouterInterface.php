@@ -2,10 +2,10 @@
 
 namespace Neitsab\Framework\Router;
 
-use Psr\Container\ContainerInterface;
 use FastRoute\RouteCollector;
 
 use Neitsab\Framework\Http\Request;
+use Psr\Container\ContainerInterface;
 
 interface RouterInterface
 {
