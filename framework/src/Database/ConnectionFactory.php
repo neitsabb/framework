@@ -4,6 +4,7 @@ namespace Neitsab\Framework\Database;
 
 use Doctrine\DBAL\Connection;
 
+use Doctrine\DBAL\Types\Type;
 use Neitsab\Framework\Core\Config;
 
 class ConnectionFactory
@@ -23,6 +24,16 @@ class ConnectionFactory
 		$defaultConnection = $this->config->get('database.default');
 		$connectionParams = $this->config->get("database.connections.{$defaultConnection}");
 
-		return \Doctrine\DBAL\DriverManager::getConnection($connectionParams);
+		$params = [
+			'dbname' => $connectionParams['database'],
+			'user' => $connectionParams['username'],
+			'password' => $connectionParams['password'],
+			'host' => $connectionParams['host'],
+			'driver' => $connectionParams['driver'],
+			'charset' => $connectionParams['charset'],
+			'port' => $connectionParams['port'],
+		];
+
+		return \Doctrine\DBAL\DriverManager::getConnection($params);
 	}
 }

@@ -2,15 +2,29 @@
 
 <?php
 
+use Doctrine\DBAL\Types\Type;
+use Neitsab\Framework\Database\Type\VarcharType;
 
 define('APP_ROOT', dirname(__DIR__));
 
-// require APP_ROOT . '/vendor/autoload.php';
+require APP_ROOT . '/vendor/autoload.php';
 
-// $app = require APP_ROOT . '/bootstrap/app.php';
+$dotenv = new Symfony\Component\Dotenv\Dotenv();
+$dotenv->load(APP_ROOT . '/.env');
 
-// $console = $app->get(\Neitsab\Framework\Console\Kernel::class);
+if (!function_exists('env')) {
+	function env(string $key, $default = null)
+	{
+		return $_ENV[$key] ?? $default;
+	}
+}
 
-// $status = $console->handle();
+Type::addType('varchar', VarcharType::class);
+
+$app = require APP_ROOT . '/bootstrap/app.php';
+
+$kernel = $app->get(\Neitsab\Framework\Console\Kernel::class);
+
+$status = $kernel->handle();
 
 exit($status);
