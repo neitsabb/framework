@@ -21,9 +21,19 @@ use Neitsab\Framework\Console\Kernel as ConsoleKernel;
 
 final class Application extends \League\Container\Container implements ContainerInterface
 {
+	/**
+	 * @var Application $container - the container instance
+	 */
 	static Application $container;
+
+	/**
+	 * @var string $rootDir - the root directory
+	 */
 	static string $rootDir;
 
+	/**
+	 * @var Controller $controller - the controller instance
+	 */
 	static ?Controller $controller;
 
 	public function __construct(string $rootDir)
@@ -31,9 +41,15 @@ final class Application extends \League\Container\Container implements Container
 		self::$rootDir = $rootDir;
 		self::$container = $this;
 		self::$controller = null;
+
 		parent::__construct();
 	}
 
+	/**
+	 * Configure the application by adding services to the container
+	 * 
+	 * @return void
+	 */
 	public function configure(): void
 	{
 		$this->delegate(new \League\Container\ReflectionContainer(true));
@@ -48,6 +64,11 @@ final class Application extends \League\Container\Container implements Container
 		$this->configureCommands();
 	}
 
+	/**
+	 * Configure the database service
+	 * 
+	 * @return void
+	 */
 	private function configureDatabase(): void
 	{
 		$this->add(ConnectionFactory::class)
@@ -59,6 +80,11 @@ final class Application extends \League\Container\Container implements Container
 		);
 	}
 
+	/**
+	 * Configure the module service
+	 * 
+	 * @return void
+	 */
 	private function configureModules(): void
 	{
 		$this->add(Modules::class)
@@ -69,12 +95,22 @@ final class Application extends \League\Container\Container implements Container
 			);
 	}
 
+	/**
+	 * Configure the router service
+	 * 
+	 * @return void
+	 */
 	private function configureRouter(): void
 	{
 		$this->add(RouterInterface::class, Router::class)
 			->addArgument(Modules::class);
 	}
 
+	/**
+	 * Configure the console service
+	 * 
+	 * @return void
+	 */
 	private function configureConsole(): void
 	{
 		$this->add(ConsoleKernel::class)
@@ -84,6 +120,11 @@ final class Application extends \League\Container\Container implements Container
 			->addArgument(RouterInterface::class);
 	}
 
+	/**
+	 * Configure the session service
+	 * 
+	 * @return void
+	 */
 	private function configureSession(): void
 	{
 		$this->addShared(SessionInterface::class, Session::class)
@@ -94,6 +135,11 @@ final class Application extends \League\Container\Container implements Container
 			);
 	}
 
+	/**
+	 * Configure the theme service
+	 * 
+	 * @return void
+	 */
 	private function configureTheme(): void
 	{
 		$this->add(Theme::class)
@@ -104,6 +150,11 @@ final class Application extends \League\Container\Container implements Container
 			);
 	}
 
+	/**
+	 * Configure the template service
+	 * 
+	 * @return void
+	 */
 	private function configureTemplate(): void
 	{
 		$this->add(TemplateFactory::class)
@@ -120,6 +171,11 @@ final class Application extends \League\Container\Container implements Container
 		);
 	}
 
+	/**
+	 * Configure the console commands
+	 * 
+	 * @return void
+	 */
 	private function configureCommands(): void
 	{
 		$this->add(
@@ -136,11 +192,22 @@ final class Application extends \League\Container\Container implements Container
 			]);
 	}
 
+	/**
+	 * Set the controller application instance
+	 * 
+	 * @param Controller $controller - the controller instance
+	 * @return void
+	 */
 	public function setController(Controller $controller): void
 	{
 		self::$controller = $controller;
 	}
 
+	/**	
+	 * Get the controller application instance
+	 * 
+	 * @return Controller
+	 */
 	public function getController(): Controller
 	{
 		return self::$controller;

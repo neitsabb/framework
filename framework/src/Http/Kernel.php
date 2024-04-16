@@ -10,6 +10,9 @@ use Neitsab\Framework\Http\Exceptions\HttpException;
 
 class Kernel
 {
+	/**
+	 * @var RouterInterface $router - The router instance
+	 */
 	protected RouterInterface $router;
 
 	public function __construct(RouterInterface $router)
@@ -17,6 +20,12 @@ class Kernel
 		$this->router = $router;
 	}
 
+	/**
+	 * Handle the request
+	 * 
+	 * @param Request $request - The request to handle
+	 * @return Response - The response
+	 */
 	public function handle(Request $request): Response
 	{
 		try {
@@ -29,6 +38,12 @@ class Kernel
 		return $response;
 	}
 
+	/**
+	 * Create an exception response
+	 * 
+	 * @param \Exception $exception - The exception to create a response for
+	 * @return Response - The response
+	 */
 	public function createExceptionResponse(\Exception $exception): Response
 	{
 		if ($exception instanceof HttpException) {

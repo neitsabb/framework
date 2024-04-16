@@ -25,7 +25,7 @@ abstract class Controller
 	 * Add routes to the controller
 	 * @return array
 	 * 
-	 * Example:
+	 * @example
 	 * 
 	 * If you have invokable controller, you can return an array with the following structure:
 	 * return [
@@ -41,14 +41,15 @@ abstract class Controller
 	 * 	'method' => 'GET'
 	 * ];
 	 */
-	abstract public static function routes();
+	abstract public static function routes(): array;
 
 	/**
 	 * Register a middleware for the controller.
 	 * 
 	 * @param array $middlewares - The middlewares to register.
+	 * @return void
 	 */
-	protected function registerMiddleware(array $middlewares)
+	protected function registerMiddleware(array $middlewares): void
 	{
 		$this->middlewares[] = $middlewares;
 	}
@@ -58,8 +59,9 @@ abstract class Controller
 	 * 
 	 * @param string $view - The view to render.
 	 * @param array $params - The parameters to pass to the view
+	 * @return Response
 	 */
-	protected function render(string $view, array $params = [])
+	protected function render(string $view, array $params = []): Response
 	{
 		$content = Application::$container->get(Template::class)->build($view, $params, $this->layout);
 
@@ -70,7 +72,13 @@ abstract class Controller
 		return $response;
 	}
 
-	public function setRequest(Request $request)
+	/**
+	 * Set the request object.
+	 * 
+	 * @param Request $request - The request object.
+	 * @return void
+	 */
+	public function setRequest(Request $request): void
 	{
 		$this->request = $request;
 	}

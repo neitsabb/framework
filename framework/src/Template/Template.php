@@ -8,9 +8,14 @@ use Neitsab\Framework\Session\SessionInterface;
 
 class Template
 {
-
+	/**
+	 * @var string $themePath - The path to the theme.
+	 */
 	protected string $themePath;
 
+	/**
+	 * @var SessionInterface $session - The session.
+	 */
 	protected SessionInterface $session;
 
 	public function __construct(string $themePath, SessionInterface $session)
@@ -19,11 +24,21 @@ class Template
 		$this->session = $session;
 	}
 
-
-	public function build(string $view, array $params = [], string $_layout = null)
-	{
+	/**
+	 * Build the view.
+	 * 
+	 * @param string $view - The view to render.
+	 * @param array $params - The parameters to pass to the view
+	 * @param string $_layout - The layout to use.
+	 * @return string
+	 */
+	public function build(
+		string $view,
+		array $params = [],
+		string $_layout = null
+	): string {
 		if (!$_layout) {
-			$_layout = Application::$controller->layout;
+			$_layout = Application::$container->getController()->layout;
 		}
 
 		dd($this->session);
@@ -34,14 +49,27 @@ class Template
 		return str_replace('{{ page }}', $page, $layout);
 	}
 
-	private function getLayout(string $layout)
+	/**
+	 * Get the layout.
+	 * 
+	 * @param string $layout - The layout to get.
+	 * @return string
+	 */
+	private function getLayout(string $layout): string
 	{
 		ob_start();
 		include_once $this->themePath . '/layouts/' . $layout . '.php';
 		return ob_get_clean();
 	}
 
-	private function getContentPage(string $page, array $params)
+	/**
+	 * Get the content page.
+	 * 
+	 * @param string $page - The page to get.
+	 * @param array $params - The parameters to pass to the page
+	 * @return string
+	 */
+	private function getContentPage(string $page, array $params): string
 	{
 		foreach ($params as $key => $value) {
 			$$key = $value;

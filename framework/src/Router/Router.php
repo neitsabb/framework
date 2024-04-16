@@ -26,6 +26,12 @@ class Router implements RouterInterface
 		$this->modules = $modules;
 	}
 
+	/**
+	 * Dispatch the request
+	 * 
+	 * @param Request $request - The request to dispatch
+	 * @return array - The handler and the vars
+	 */
 	public function dispatch(Request $request): array
 	{
 		$routeInfo = $this->extractRouteInfo($request);
@@ -45,7 +51,13 @@ class Router implements RouterInterface
 		return [$handler, $vars];
 	}
 
-	private function extractRouteInfo(Request $request)
+	/**
+	 * Extract the route info
+	 * 
+	 * @param Request $request - The request to extract the route info from
+	 * @return array - The route info
+	 */
+	private function extractRouteInfo(Request $request): array
 	{
 		$routeInfo = $this->createDispatcher()
 			->dispatch(
@@ -67,6 +79,11 @@ class Router implements RouterInterface
 		}
 	}
 
+	/**
+	 * Create the dispatcher
+	 * 
+	 * @return Dispatcher - The dispatcher
+	 */
 	private function createDispatcher(): Dispatcher
 	{
 		return \FastRoute\simpleDispatcher(function (RouteCollector $r) {
@@ -74,6 +91,12 @@ class Router implements RouterInterface
 		});
 	}
 
+	/**
+	 * Load the routes from the modules
+	 * 
+	 * @param RouteCollector $router - The router to load the routes into
+	 * @return void
+	 */
 	public function loadRoutes(RouteCollector $router): void
 	{
 		$loadedRoutes = [];

@@ -7,7 +7,9 @@ use Neitsab\Framework\Console\Command\CommandInterface;
 
 final class Kernel
 {
-
+	/**
+	 * @var Console $console - the console application
+	 */
 	private Console $console;
 
 	public function __construct(Console $console)
@@ -15,6 +17,11 @@ final class Kernel
 		$this->console = $console;
 	}
 
+	/**
+	 * Register all the commands and handle the console application
+	 * 
+	 * @return int - the status
+	 */
 	public function handle(): int
 	{
 		$this->registerCommands();
@@ -26,6 +33,11 @@ final class Kernel
 		return $status;
 	}
 
+	/**
+	 * Register all the commands in the /Command directory
+	 * 
+	 * @return void
+	 */
 	private function registerCommands()
 	{
 		$commandFiles = new \DirectoryIterator(__DIR__ . '/Command');

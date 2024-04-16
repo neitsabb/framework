@@ -7,6 +7,11 @@ use Neitsab\Framework\Core\Application;
 
 class Console
 {
+	/**
+	 * Run the console application
+	 * 
+	 * @return int - the status
+	 */
 	public function run(): int
 	{
 		$argv = $_SERVER['argv'];
@@ -31,6 +36,14 @@ class Console
 		return $status;
 	}
 
+	/**
+	 * Parse the options from the command line arguments
+	 * 
+	 * @example --option=value --option2
+	 * 
+	 * @param array $args - the command line arguments
+	 * @return array - the options
+	 */
 	private function parseOptions(array $args): array
 	{
 		$options = [];

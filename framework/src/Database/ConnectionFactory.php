@@ -7,8 +7,14 @@ use Neitsab\Framework\Core\Config;
 
 class ConnectionFactory
 {
+	/**
+	 * @var Config $config - the configuration
+	 */
 	private Config $config;
 
+	/**
+	 * @var string $defaultConnection - the default connection
+	 */
 	public string $defaultConnection;
 
 	public function __construct(Config $config)
@@ -17,6 +23,11 @@ class ConnectionFactory
 		$this->defaultConnection = $this->config->get('database.default');
 	}
 
+	/**
+	 * Make a connection to the database based on the default connection config
+	 * 
+	 * @return Connection
+	 */
 	public function make(): Connection
 	{
 		switch ($this->defaultConnection) {
@@ -28,6 +39,11 @@ class ConnectionFactory
 		return new Connection($connection);
 	}
 
+	/**
+	 * Make a connection to a MySQL database
+	 * 
+	 * @return \PDO
+	 */
 	private function makeMysqlConnection(): \PDO
 	{
 		$host = $this->config->get('database.connections.mysql.host');
