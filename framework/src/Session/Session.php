@@ -14,7 +14,36 @@ class Session implements SessionInterface
 	public function __construct(string $flashKey)
 	{
 		$this->flashKey = $flashKey;
+	}
+
+	/**
+	 * Start the session
+	 * 
+	 * @return void
+	 */
+	public function start(): void
+	{
 		session_start();
+	}
+
+	/**
+	 * Destroy the session
+	 * 
+	 * @return void
+	 */
+	public function destroy(): void
+	{
+		session_destroy();
+	}
+
+	/**
+	 * Regenerate the session id
+	 * 
+	 * @return void
+	 */
+	public function regenerate(): void
+	{
+		session_regenerate_id();
 	}
 
 	/**

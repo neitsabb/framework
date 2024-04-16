@@ -4,6 +4,12 @@ namespace Neitsab\Framework\Session;
 
 interface SessionInterface
 {
+	public function start(): void;
+
+	public function destroy(): void;
+
+	public function regenerate(): void;
+
 	public function set(string $key, $value): void;
 
 	public function get(string $key, $default = null);
