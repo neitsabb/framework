@@ -1,9 +1,4 @@
-#!/usr/bin/env php
-
 <?php
-
-use Doctrine\DBAL\Types\Type;
-use Neitsab\Framework\Database\Type\VarcharType;
 
 define('APP_ROOT', dirname(__DIR__));
 
@@ -18,8 +13,6 @@ if (!function_exists('env')) {
 		return $_ENV[$key] ?? $default;
 	}
 }
-
-Type::addType('varchar', VarcharType::class);
 
 $app = require APP_ROOT . '/bootstrap/app.php';
 

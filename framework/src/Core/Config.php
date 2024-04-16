@@ -14,14 +14,24 @@ class Config
 	 */
 	protected string $path;
 
-	public function __construct(string $rootDir)
+	public function __construct()
 	{
-		$this->path = $rootDir . '/app/config';
+		$this->path =  Application::$rootDir . '/app/config';
 
+		$this->loadConfigFiles();
+	}
+
+	/**
+	 * Load the configuration files
+	 * 
+	 * @return void
+	 */
+	private function loadConfigFiles()
+	{
 		$files = scandir($this->path);
 
 		foreach ($files as $file) {
-			if ($file === '.' || $file === '..' || is_dir($rootDir . "/config/$file")) {
+			if ($file === '.' || $file === '..' || is_dir(Application::$rootDir . "/app/config/$file")) {
 				continue;
 			}
 
@@ -34,13 +44,11 @@ class Config
 	}
 
 	/**
-	 * 
 	 * Get a configuration value
 	 * 
 	 * @param string $key - The configuration key
 	 * @param string $default - The default value if the key does not exist
 	 * @return mixed
-	 * 
 	 */
 	public function get(string $key, string $default = null): mixed
 	{
@@ -48,18 +56,19 @@ class Config
 	}
 
 	/**
-	 * The set function in PHP assigns a value to a specified key in an array called settings.
+	 * Assigns a value to a specified key in a settings array.
 	 * 
 	 * @param string key - represents the key of the setting you want to set or update in the settings array.
 	 * @param string value - a string type variable that represents the value to be assigned to the specified key in the settings array.
+	 * @return void 
 	 */
-	public function set(string $key, string $value): mixed
+	public function set(string $key, string $value): void
 	{
 		$this->settings[$key] = $value;
 	}
 
 	/**
-	 * The above PHP function returns all settings as an array.
+	 * Returns all settings as an array.
 	 * 
 	 * @return array An array containing all the settings stored in the object.
 	 */
@@ -69,7 +78,7 @@ class Config
 	}
 
 	/**
-	 * The has function in PHP checks if a key exists in the settings array.
+	 * Checks if a key exists in the settings array.
 	 * 
 	 * @param string key - represents the key you want to check for in the settings array.
 	 * @return bool The function returns a boolean value indicating whether the key exists in the settings array.
@@ -80,7 +89,7 @@ class Config
 	}
 
 	/**
-	 * The mergeConfig function in PHP merges the configuration settings with the existing settings.
+	 * Merges the configuration settings with the existing settings.
 	 * 
 	 * @param array settings - represents the settings array to which the configuration settings will be merged.
 	 * @param string key - represents the key of the configuration settings to be merged.
@@ -96,7 +105,7 @@ class Config
 	}
 
 	/**
-	 * The _get function in PHP retrieves a value from an array using a dot-separated key.
+	 * Retrieves a value from an array using a dot-separated key.
 	 * 
 	 * @param array array - represents the array from which the value will be retrieved.
 	 * @param string key - represents the key used to retrieve the value from the array.

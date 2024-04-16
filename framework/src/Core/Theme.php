@@ -2,7 +2,6 @@
 
 namespace Neitsab\Framework\Core;
 
-
 class Theme
 {
 	/**
@@ -15,8 +14,9 @@ class Theme
 	 */
 	private array $config;
 
-	public function __construct()
+	public function __construct(array $config)
 	{
+		$this->config = $config;
 		$this->load();
 	}
 
@@ -27,9 +27,9 @@ class Theme
 	 */
 	public function load()
 	{
-		$theme = Application::$app->config->get('themes.active');
+		$theme = $this->config['active'];
 		$this->path = Application::$rootDir .
-			Application::$app->config->get('themes.path') .
+			$this->config['path'] .
 			DIRECTORY_SEPARATOR .
 			$theme;
 
@@ -41,12 +41,22 @@ class Theme
 		$this->generateVariables();
 	}
 
+	/**
+	 * Load the theme configuration.
+	 *
+	 * @return void
+	 */
 	private function loadConfig()
 	{
 		$config = json_decode(file_get_contents($this->path . '/theme.json'), true);
 		$this->config = $config;
 	}
 
+	/**
+	 * Generate the CSS variables from the theme configuration.
+	 *
+	 * @return void
+	 */
 	private function generateVariables()
 	{
 		$css = '';
@@ -90,6 +100,7 @@ class Theme
 			}
 		}
 	}
+
 	/**
 	 * Get the path to the theme directory.
 	 *

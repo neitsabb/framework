@@ -9,6 +9,6 @@ return [
 	/**
 	 * The path to the themes directory.
 	 */
-	'path' => '/themes',
+	'path' => '/app/themes',
 
 ];

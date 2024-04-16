@@ -2,82 +2,142 @@
 
 namespace Neitsab\Framework\Console\Command;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\DBAL\Schema\Schema;
+use Neitsab\Framework\Database\Connection;
 use Neitsab\Framework\Console\Command\CommandInterface;
-use Neitsab\Framework\Database\Type\VarcharType;
 
 class MigrateDatabaseCommand implements CommandInterface
 {
+	/**
+	 * @var string $name - the command name
+	 */
 	private string $name = 'db:migrate';
 
-	private \Doctrine\DBAL\Connection $connection;
+	/**
+	 * @var Connection $connection - the database connection
+	 */
+	private Connection $connection;
 
-	public function __construct(\Doctrine\DBAL\Connection $connection)
+	/**
+	 * @var string $migrationsPath - the path to the migrations directory
+	 */
+	private string $migrationsPath;
+
+	public function __construct(Connection $connection, string $migrationsPath)
 	{
 		$this->connection = $connection;
+		$this->migrationsPath = $migrationsPath;
 	}
 
+	/**
+	 * Execute the command
+	 * 
+	 * @param array $params - the command line options
+	 * @return int - the status
+	 */
 	public function execute(array $params = []): int
 	{
 		try {
-
-			// Create a migrations table SQL if table not already in existence
+			// Create the migrations table if it does not exist
 			$this->createMigrationsTable();
 
+			// Begin a transaction
 			$this->connection->beginTransaction();
 
-
+			// Get the applied migrations
 			$appliedMigrations = $this->getAppliedMigrations();
 
+			// Get the migration files
+			$migrationFiles = $this->getMigrationFiles();
 
-			// Get the $migrationFiles from the migrations folder
+			// Get the migrations that need to be applied
+			$migrationsToApply = array_diff($migrationFiles, $appliedMigrations);
 
-			// Get the migrations to apply. i.e. they are in $migrationFiles but not in $appliedMigrations
+			// Apply the migrations
+			foreach ($migrationsToApply as $migrationFile) {
+				require_once $this->migrationsPath . '/' . $migrationFile;
+				$className = pathinfo($migrationFile, PATHINFO_FILENAME);
+				$migrationInstance = new $className(
+					$this->connection,
+					$className
+				);
+				/** @disregard P1009 Undefined type **/
+				$migrationInstance->up();
 
-			// Create SQL for any migrations which have not been run ..i.e. which are not in the database
+				// Insert the migration into the migrations table
+				$this->insertMigration($migrationFile);
+			}
 
-			// Add migration to database
-
-			// Execute the SQL query
-
+			// Commit the transaction
 			$this->connection->commit();
 
 			return 0;
 		} catch (\Throwable $throwable) {
-
-			// $this->connection->rollBack();
-
+			if ($this->connection->isTransactionActive()) {
+				$this->connection->rollBack();
+			}
 			throw $throwable;
 		}
 	}
 
-	private function getAppliedMigrations(): array
+	/**
+	 * Insert a migration into the migrations table
+	 * 
+	 * @param string $migration - the migration file name
+	 * @return void
+	 */
+	private function insertMigration(string $migration): void
 	{
-		$sql = "SELECT migration FROM migrations;";
-
-		$appliedMigrations = $this->connection->executeQuery($sql)->fetchFirstColumn();
-
-		return $appliedMigrations;
+		$sql = "INSERT INTO migrations (migration) VALUES (?)";
+		$statement = $this->connection->prepare($sql);
+		$statement->bindValue(1, $migration);
+		$statement->execute();
 	}
 
+	/**
+	 * Get the applied migrations
+	 * 
+	 * @return array - the applied migrations
+	 */
+	private function getAppliedMigrations(): array
+	{
+		$sql = "SELECT migration FROM migrations";
+		$statement = $this->connection->prepare($sql);
+		$statement->execute();
+
+		$migrations = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+		return array_column($migrations, 'migration');
+	}
+
+	/**
+	 * Create the migrations table if it does not exist
+	 * 
+	 * @return void
+	 */
 	private function createMigrationsTable(): void
 	{
-		$schemaManager = $this->connection->createSchemaManager();
+		$this->connection->executeQuery(
+			"CREATE TABLE IF NOT EXISTS migrations (
+				id INT AUTO_INCREMENT PRIMARY KEY,
+				migration VARCHAR(255) NOT NULL
+			)"
+		);
+	}
 
-		if (!$schemaManager->tablesExist(['migrations'])) {
-			$schema = new Schema();
-			$table = $schema->createTable('migrations');
-			$table->addColumn('id', Types::INTEGER, ['unsigned' => true, 'autoincrement' => true]);
-			$table->addColumn('migration', Types::STRING, ['length' => 255]);
-			$table->addColumn('created_at', Types::DATETIME_IMMUTABLE, ['default' => 'CURRENT_TIMESTAMP']);
-			$table->setPrimaryKey(['id']);
+	/**
+	 * Get the migration files
+	 * 
+	 * @return array - the migration files
+	 */
+	private function getMigrationFiles()
+	{
+		$migrationFiles = scandir($this->migrationsPath);
 
-			$sqlArray = $schema->toSql($this->connection->getDatabasePlatform());
+		$files = array_filter(
+			$migrationFiles,
+			fn ($file) => !in_array($file, ['.', '..'])
+		);
 
-			$this->connection->executeQuery($sqlArray[0]);
-
-			echo 'migrations table created' . PHP_EOL;
-		}
+		return $files;
 	}
 }

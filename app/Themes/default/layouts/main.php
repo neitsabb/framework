@@ -128,7 +128,7 @@
 	</style>
 </head>
 
-<body class="bg-slate-900  h-screen flex items-center justify-center">
+<body class="bg-slate-200  h-screen flex items-center justify-center">
 	{{ page }}
 </body>
 
