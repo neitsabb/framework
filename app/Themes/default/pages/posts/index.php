@@ -1,1 +1,1 @@
-Coucou index posts
+Coucou index posts <?php dd($session) ?>

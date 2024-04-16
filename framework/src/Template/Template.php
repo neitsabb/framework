@@ -41,9 +41,13 @@ class Template
 			$_layout = Application::$container->getController()->layout;
 		}
 
-		dd($this->session);
-
 		$layout = $this->getLayout($_layout);
+
+		$params = [
+			'session' => $this->session,
+			...$params,
+		];
+
 		$page = $this->getContentPage($view, $params);
 
 		return str_replace('{{ page }}', $page, $layout);
