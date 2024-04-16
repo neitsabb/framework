@@ -6,7 +6,7 @@ namespace Neitsab\Framework\Http;
 use Neitsab\Framework\Http\Response\Response;
 use Neitsab\Framework\Router\RouterInterface;
 use Neitsab\Framework\Http\Exceptions\HttpException;
-
+use Neitsab\Framework\Http\Middlewares\Contracts\RequestHandlerInterface;
 
 class Kernel
 {
@@ -15,9 +15,15 @@ class Kernel
 	 */
 	protected RouterInterface $router;
 
-	public function __construct(RouterInterface $router)
+	/**
+	 * @var RequestHandlerInterface $requestHandler - The request handler instance
+	 */
+	protected RequestHandlerInterface $requestHandler;
+
+	public function __construct(RouterInterface $router, RequestHandlerInterface $requestHandler)
 	{
 		$this->router = $router;
+		$this->requestHandler = $requestHandler;
 	}
 
 	/**
@@ -29,8 +35,7 @@ class Kernel
 	public function handle(Request $request): Response
 	{
 		try {
-			[$routeHandler, $vars] = $this->router->dispatch($request);
-			$response = call_user_func_array($routeHandler, $vars);
+			$response = $this->requestHandler->handle($request);
 		} catch (\Exception $exception) {
 			$response = $this->createExceptionResponse($exception);
 		}
@@ -39,12 +44,23 @@ class Kernel
 	}
 
 	/**
+	 * Terminate the request
+	 * 
+	 * @param Response $response - The response to terminate
+	 * @return void
+	 */
+	public function terminate(Request $request, Response $response): void
+	{
+		$request->session?->clearFlash();
+	}
+
+	/**
 	 * Create an exception response
 	 * 
 	 * @param \Exception $exception - The exception to create a response for
 	 * @return Response - The response
 	 */
-	public function createExceptionResponse(\Exception $exception): Response
+	private function createExceptionResponse(\Exception $exception): Response
 	{
 		if ($exception instanceof HttpException) {
 			return new Response($exception->getMessage(), $exception->getStatusCode());
