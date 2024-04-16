@@ -2,10 +2,10 @@
 
 namespace Neitsab\Framework\Core;
 
-use Neitsab\Framework\Http\Kernel;
-use Neitsab\Framework\Router\Router;
 use Psr\Container\ContainerInterface;
 
+use Neitsab\Framework\Http\Kernel;
+use Neitsab\Framework\Router\Router;
 use Neitsab\Framework\Console\Console;
 use Neitsab\Framework\Session\Session;
 use Neitsab\Framework\Template\Template;
@@ -17,6 +17,8 @@ use Neitsab\Framework\Database\ConnectionFactory;
 use Neitsab\Framework\Http\Controller\Controller;
 use League\Container\Argument\Literal\ArrayArgument;
 use League\Container\Argument\Literal\StringArgument;
+use Neitsab\Framework\Http\Middlewares\RequestHandler;
+use Neitsab\Framework\Http\Middlewares\Contracts\RequestHandlerInterface;
 use Neitsab\Framework\Console\Kernel as ConsoleKernel;
 
 final class Application extends \League\Container\Container implements ContainerInterface
@@ -58,6 +60,8 @@ final class Application extends \League\Container\Container implements Container
 		$this->configureModules();
 		$this->configureRouter();
 		$this->configureConsole();
+		$this->configureRequestHandler();
+		$this->configureKernel();
 		$this->configureSession();
 		$this->configureTheme();
 		$this->configureTemplate();
@@ -115,9 +119,30 @@ final class Application extends \League\Container\Container implements Container
 	{
 		$this->add(ConsoleKernel::class)
 			->addArgument(Console::class);
+	}
 
+	/**
+	 * Configure the request handler service
+	 * 
+	 * @return void
+	 */
+	private function configureRequestHandler(): void
+	{
+		$this->add(RequestHandlerInterface::class, RequestHandler::class);
+	}
+
+	/**
+	 * Configure the kernel service
+	 * 
+	 * @return void
+	 */
+	private function configureKernel(): void
+	{
 		$this->add(Kernel::class)
-			->addArgument(RouterInterface::class);
+			->addArguments([
+				RouterInterface::class,
+				RequestHandlerInterface::class,
+			]);
 	}
 
 	/**
