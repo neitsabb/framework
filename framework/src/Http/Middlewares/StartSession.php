@@ -3,10 +3,11 @@
 namespace Neitsab\Framework\Http\Middlewares;
 
 use Neitsab\Framework\Http\Request;
+use Neitsab\Framework\Core\Application;
 use Neitsab\Framework\Http\Response\Response;
+use Neitsab\Framework\Session\SessionInterface;
 use Neitsab\Framework\Http\Middlewares\Contracts\MiddlewareInterface;
 use Neitsab\Framework\Http\Middlewares\Contracts\RequestHandlerInterface;
-use Neitsab\Framework\Session\SessionInterface;
 
 class StartSession implements MiddlewareInterface
 {
@@ -15,6 +16,8 @@ class StartSession implements MiddlewareInterface
 	 */
 	protected SessionInterface $session;
 
+
+
 	public function __construct(SessionInterface $session)
 	{
 		$this->session = $session;
@@ -22,7 +25,9 @@ class StartSession implements MiddlewareInterface
 
 	public function process(Request $request, RequestHandlerInterface $requestHandler): Response
 	{
-		$this->session->start();
+		if (!str_starts_with($request->uri(), Application::$config->get('app.api_prefix'))) {
+			$this->session->start();
+		}
 
 		$request->setSession($this->session);
 

@@ -10,5 +10,5 @@ interface RouterInterface
 {
 	public function dispatch(Request $request): array;
 
-	public function loadRoutes(RouteCollector $router): void;
+	public function loadRoutes(RouteCollector $router): array;
 }

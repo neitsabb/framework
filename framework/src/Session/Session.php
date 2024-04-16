@@ -2,6 +2,7 @@
 
 namespace Neitsab\Framework\Session;
 
+use Neitsab\Framework\Core\Application;
 use Neitsab\Framework\Session\SessionInterface;
 
 class Session implements SessionInterface
@@ -11,9 +12,9 @@ class Session implements SessionInterface
 	 */
 	private string $flashKey;
 
-	public function __construct(string $flashKey)
+	public function __construct()
 	{
-		$this->flashKey = $flashKey;
+		$this->flashKey = Application::$config->get('session.flash_key');
 	}
 
 	/**
@@ -23,7 +24,9 @@ class Session implements SessionInterface
 	 */
 	public function start(): void
 	{
-		session_start();
+		if (session_status() === PHP_SESSION_NONE) {
+			session_start();
+		}
 	}
 
 	/**

@@ -14,9 +14,9 @@ class Theme
 	 */
 	private array $config;
 
-	public function __construct(array $config)
+	public function __construct()
 	{
-		$this->config = $config;
+		$this->config = Application::$config->get('themes');
 		$this->load();
 	}
 

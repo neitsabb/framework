@@ -21,6 +21,11 @@ class Router implements RouterInterface
 	 */
 	private Modules $modules;
 
+	/**
+	 * @var array $routes
+	 */
+	private array $routes;
+
 	public function __construct(Modules $modules)
 	{
 		$this->modules = $modules;
@@ -87,7 +92,7 @@ class Router implements RouterInterface
 	private function createDispatcher(): Dispatcher
 	{
 		return \FastRoute\simpleDispatcher(function (RouteCollector $r) {
-			$this->loadRoutes($r);
+			$this->routes = $this->loadRoutes($r);
 		});
 	}
 
@@ -97,10 +102,9 @@ class Router implements RouterInterface
 	 * @param RouteCollector $router - The router to load the routes into
 	 * @return void
 	 */
-	public function loadRoutes(RouteCollector $router): void
+	public function loadRoutes(RouteCollector $router): array
 	{
 		$loadedRoutes = [];
-
 		foreach ($this->modules->all() as $moduleName => $modules) {
 			foreach ($modules as $componentName => $component) {
 				foreach ($component as $controllerName) {
@@ -111,6 +115,7 @@ class Router implements RouterInterface
 					$controllerNamespace = 'Modules\\' . $moduleName . '\\' . $componentName . '\\' . $controllerName;
 
 					if (class_exists($controllerNamespace)) {
+
 						$reflectionClass = new \ReflectionClass($controllerNamespace);
 						if ($reflectionClass->hasMethod('routes')) {
 							$routes = $controllerNamespace::routes();
@@ -131,5 +136,7 @@ class Router implements RouterInterface
 				}
 			}
 		}
+
+		return $loadedRoutes;
 	}
 }
