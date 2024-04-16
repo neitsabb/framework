@@ -43,13 +43,83 @@ class Request
         array $files,
         array $server,
     ) {
-        $this->getParams = $getParams;
-        $this->postParams = $postParams;
+        $this->getParams = $this->sanitize('GET', $getParams);
+        $this->postParams = $this->sanitize('POST', $postParams);
         $this->cookies = $cookies;
         $this->files = $files;
         $this->server = $server;
     }
 
+    public function validate(array $rules): array
+    {
+        $errors = [];
+
+        foreach ($rules as $key => $rule) {
+            $input = $this->input($key) ?? null;
+
+            $rulesParts = explode('|', $rule);
+
+            foreach ($rulesParts as $rulePart) {
+                $ruleDetails = explode(':', $rulePart);
+
+                $ruleName = $ruleDetails[0];
+                $ruleValue = $ruleDetails[1] ?? null;
+
+                $errors[$key] = $this->validateRule($input, $ruleName, $ruleValue, $key);
+            }
+        }
+
+        return $errors;
+    }
+
+    public function validateRule(
+        mixed $input,
+        string $ruleName,
+        mixed $ruleValue,
+        string $key
+    ) {
+        switch ($ruleName) {
+            case 'required':
+                if ($input === null || $input === '' || empty($input)) {
+                    return 'The ' . $key . ' field is required.';
+                }
+                break;
+            case 'email':
+                if (!filter_var($input, FILTER_VALIDATE_EMAIL)) {
+                    return 'The ' . $key . ' field must be a valid email address.';
+                }
+                break;
+            case 'min':
+                if (strlen($input) < $ruleValue) {
+                    return 'The ' . $key . ' field must be at least ' . $ruleValue . ' characters.';
+                }
+                break;
+            case 'max':
+                if (strlen($input) > $ruleValue) {
+                    return 'The ' . $key . ' field must be at most ' . $ruleValue . ' characters.';
+                }
+                break;
+            case 'unique':
+                // Check if the value is unique in the database
+                break;
+            default:
+                throw new \Exception('The validation rule ' . $ruleName . ' does not exist.');
+        }
+    }
+
+    /**
+     * Sanitize the input parameters.
+     */
+    private function sanitize(string $method, array $params): array
+    {
+        $sanitized = [];
+
+        foreach ($params as $key => $value) {
+            $sanitized[$key] = filter_input($method === 'GET' ? INPUT_GET : INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+        }
+
+        return $sanitized;
+    }
     /**
      * Capture the request from the global variables and return a new instance.
      */
