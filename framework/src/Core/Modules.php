@@ -5,11 +5,6 @@ namespace Neitsab\Framework\Core;
 class Modules
 {
     /**
-     * @var Config $config - The configuration object
-     */
-    private Config $config;
-
-    /**
      * @var string $path - The path to the modules directory
      */
     private string $path;
@@ -19,11 +14,10 @@ class Modules
      */
     private array $modules = [];
 
-    public function __construct(string $rootDir, Config $config)
+    public function __construct(string $modulePath)
     {
-        $this->config = $config;
 
-        $this->path = $rootDir . $this->config->get('modules.path');
+        $this->path = Application::$rootDir . $modulePath;
 
         $this->loadModules();
     }

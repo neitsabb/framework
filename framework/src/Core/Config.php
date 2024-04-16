@@ -14,14 +14,14 @@ class Config
 	 */
 	protected string $path;
 
-	public function __construct(string $rootDir)
+	public function __construct()
 	{
-		$this->path = $rootDir . '/app/config';
+		$this->path =  Application::$rootDir . '/app/config';
 
 		$files = scandir($this->path);
 
 		foreach ($files as $file) {
-			if ($file === '.' || $file === '..' || is_dir($rootDir . "/config/$file")) {
+			if ($file === '.' || $file === '..' || is_dir(Application::$rootDir . "/app/config/$file")) {
 				continue;
 			}
 

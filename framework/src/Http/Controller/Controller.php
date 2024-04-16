@@ -2,11 +2,14 @@
 
 namespace Neitsab\Framework\Http\Controller;
 
-use Psr\Container\ContainerInterface;
+use Neitsab\Framework\Http\Request;
+use Neitsab\Framework\Core\Application;
+use Neitsab\Framework\Template\Template;
+use Neitsab\Framework\Http\Response\Response;
 
 abstract class Controller
 {
-	public array $views;
+	public Request $request;
 
 	/**
 	 * @var string $layout - The layout to use for the controller.
@@ -17,11 +20,6 @@ abstract class Controller
 	 * @var array $middlewares - The middlewares to use for the controller.
 	 */
 	public array $middlewares = [];
-
-	/**
-	 * @var ContainerInterface $container - The container to use for the controller.
-	 */
-	protected ?ContainerInterface $container = null;
 
 	/**
 	 * Add routes to the controller
@@ -55,19 +53,25 @@ abstract class Controller
 		$this->middlewares[] = $middlewares;
 	}
 
-	public function setContainer(ContainerInterface $container)
+	/**
+	 * Render a view with the layout.
+	 * 
+	 * @param string $view - The view to render.
+	 * @param array $params - The parameters to pass to the view
+	 */
+	protected function render(string $view, array $params = [])
 	{
-		$this->container = $container;
+		$content = Application::$container->get(Template::class)->build($view, $params, $this->layout);
+
+		$response ??= new Response();
+
+		$response->setContent($content);
+
+		return $response;
 	}
 
-	// /**
-	//  * Render a view with the layout.
-	//  * 
-	//  * @param string $view - The view to render.
-	//  * @param array $params - The parameters to pass to the view
-	//  */
-	// protected function render(string $view, array $params = [])
-	// {
-	// 	return Application::$app->template->build($view, $params, $this->layout);
-	// }
+	public function setRequest(Request $request)
+	{
+		$this->request = $request;
+	}
 }

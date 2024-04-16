@@ -2,19 +2,11 @@
 
 namespace Neitsab\Framework\Console;
 
-use Psr\Container\ContainerInterface;
-
 use Neitsab\Framework\Console\Exception\ConsoleException;
+use Neitsab\Framework\Core\Application;
 
 class Console
 {
-	protected ContainerInterface $container;
-
-	public function __construct(ContainerInterface $container)
-	{
-		$this->container = $container;
-	}
-
 	public function run(): int
 	{
 		$argv = $_SERVER['argv'];
@@ -28,7 +20,11 @@ class Console
 		$args = array_slice($argv, 2);
 		$options = $this->parseOptions($args);
 
-		$command = $this->container->get($commandName);
+		if (!Application::$container->has($commandName)) {
+			throw new ConsoleException("Command $commandName not found");
+		}
+
+		$command = Application::$container->get($commandName);
 
 		$status = $command->execute($options);
 

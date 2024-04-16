@@ -5,14 +5,13 @@ namespace Neitsab\Framework\Router;
 
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use Neitsab\Framework\Core\Config;
+use Neitsab\Framework\Core\Application;
 
 use Neitsab\Framework\Core\Modules;
 use Neitsab\Framework\Http\Request;
 use Neitsab\Framework\Router\RouterInterface;
 use Neitsab\Framework\Http\Exceptions\HttpException;
 use Neitsab\Framework\Http\Exceptions\HttpRequestMethodException;
-use Psr\Container\ContainerInterface;
 
 class Router implements RouterInterface
 {
@@ -22,25 +21,12 @@ class Router implements RouterInterface
 	 */
 	private Modules $modules;
 
-	/**
-	 * @var array $routes
-	 */
-	private array $routes = [];
-
-	/**
-	 * @var Config $config
-	 */
-	private Config $config;
-
-	public function __construct(
-		Config $config,
-		Modules $modules
-	) {
-		$this->config = $config;
+	public function __construct(Modules $modules)
+	{
 		$this->modules = $modules;
 	}
 
-	public function dispatch(Request $request, ContainerInterface $container): array
+	public function dispatch(Request $request): array
 	{
 		$routeInfo = $this->extractRouteInfo($request);
 
@@ -48,7 +34,11 @@ class Router implements RouterInterface
 
 		if (is_array($handler)) {
 			[$controllerId, $action] = $handler;
-			$controller = $container->get($controllerId);
+			$controller = Application::$container->get($controllerId);
+			if (is_subclass_of($controller, 'Neitsab\Framework\Http\Controller\Controller')) {
+				$controller->setRequest($request);
+				Application::$container->setController($controller);
+			}
 			$handler = [$controller, $action];
 		}
 
@@ -80,11 +70,11 @@ class Router implements RouterInterface
 	private function createDispatcher(): Dispatcher
 	{
 		return \FastRoute\simpleDispatcher(function (RouteCollector $r) {
-			$this->routes = $this->loadRoutes($r);
+			$this->loadRoutes($r);
 		});
 	}
 
-	public function loadRoutes(RouteCollector $router): array
+	public function loadRoutes(RouteCollector $router): void
 	{
 		$loadedRoutes = [];
 
@@ -118,7 +108,5 @@ class Router implements RouterInterface
 				}
 			}
 		}
-
-		return $loadedRoutes;
 	}
 }

@@ -15,8 +15,9 @@ class Theme
 	 */
 	private array $config;
 
-	public function __construct()
+	public function __construct(array $config)
 	{
+		$this->config = $config;
 		$this->load();
 	}
 
@@ -27,9 +28,9 @@ class Theme
 	 */
 	public function load()
 	{
-		$theme = Application::$app->config->get('themes.active');
+		$theme = $this->config['active'];
 		$this->path = Application::$rootDir .
-			Application::$app->config->get('themes.path') .
+			$this->config['path'] .
 			DIRECTORY_SEPARATOR .
 			$theme;
 
