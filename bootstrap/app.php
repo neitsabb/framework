@@ -7,7 +7,9 @@
  * @var \Neitsab\Framework\Core\Application $app
  * @return \Neitsab\Framework\Core\Application
  */
-$app = new Neitsab\Framework\Core\Application();
+$app = new Neitsab\Framework\Core\Application(
+	APP_ROOT
+);
 
 $app->configure();
 
