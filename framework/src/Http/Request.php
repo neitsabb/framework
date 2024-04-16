@@ -2,6 +2,8 @@
 
 namespace Neitsab\Framework\Http;
 
+use Neitsab\Framework\Session\SessionInterface;
+
 class Request
 {
     /**
@@ -28,6 +30,11 @@ class Request
      * @var array $server - The server parameters.
      */
     public readonly array $server;
+
+    /**
+     * @var SessionInterface $session - The session instance.
+     */
+    public SessionInterface $session;
 
     public function __construct(
         array $getParams,
@@ -57,6 +64,11 @@ class Request
         );
     }
 
+    public function setSession(SessionInterface $session)
+    {
+        $this->session = $session;
+    }
+
     /**
      * Get the request method.
      * 
@@ -77,6 +89,15 @@ class Request
         return strtok($this->server['REQUEST_URI'], '?');
     }
 
+    public function inputs(): array
+    {
+        return $this->postParams;
+    }
+
+    public function params(): array
+    {
+        return $this->getParams;
+    }
     /**
      * Get the request input.
      * 
