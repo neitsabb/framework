@@ -2,6 +2,7 @@
 
 namespace Modules\Posts\Controllers;
 
+use Modules\Posts\Models\Post;
 use Neitsab\Framework\Http\Response\Response;
 use Neitsab\Framework\Http\Controller\Controller;
 use Neitsab\Framework\Http\Response\RedirectResponse;
@@ -32,6 +33,8 @@ class PostsController extends Controller
 
 	public function index()
 	{
+		$posts = Post::all();
+
 		$this->request->session->setFlash('name', 'John Doe');
 
 		return $this->render('posts/index');
