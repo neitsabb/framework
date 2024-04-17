@@ -14,10 +14,10 @@ class Modules
      */
     private array $modules = [];
 
-    public function __construct(string $modulePath)
+    public function __construct()
     {
 
-        $this->path = Application::$rootDir . $modulePath;
+        $this->path = Application::$rootDir . Application::$config->get('modules.path');
 
         $this->loadModules();
     }

@@ -15,4 +15,12 @@ interface RequestHandlerInterface
 	 * @return Response
 	 */
 	public function handle(Request $request): Response;
+
+	/**
+	 * Inject middlewares at the beginning of the array.
+	 * 
+	 * @param array $middlewares
+	 * @return void
+	 */
+	public function inject(array $middlewares): void;
 }

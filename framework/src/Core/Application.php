@@ -2,12 +2,14 @@
 
 namespace Neitsab\Framework\Core;
 
+use League\Container\Argument\Literal\StringArgument;
 use Psr\Container\ContainerInterface;
 
 use Neitsab\Framework\Http\Kernel;
 use Neitsab\Framework\Router\Router;
 use Neitsab\Framework\Console\Console;
 use Neitsab\Framework\Session\Session;
+use Neitsab\Framework\Database\Model;
 use Neitsab\Framework\Template\Template;
 use Neitsab\Framework\Database\Connection;
 use Neitsab\Framework\Router\RouterInterface;
@@ -15,8 +17,6 @@ use Neitsab\Framework\Session\SessionInterface;
 use Neitsab\Framework\Template\TemplateFactory;
 use Neitsab\Framework\Database\ConnectionFactory;
 use Neitsab\Framework\Http\Controller\Controller;
-use League\Container\Argument\Literal\ArrayArgument;
-use League\Container\Argument\Literal\StringArgument;
 use Neitsab\Framework\Http\Middlewares\RequestHandler;
 use Neitsab\Framework\Http\Middlewares\Contracts\RequestHandlerInterface;
 use Neitsab\Framework\Console\Kernel as ConsoleKernel;
@@ -38,12 +38,17 @@ final class Application extends \League\Container\Container implements Container
 	 */
 	static ?Controller $controller;
 
+	/**
+	 * @var Config $config - the configuration instance
+	 */
+	static ?Config $config;
+
 	public function __construct(string $rootDir)
 	{
 		self::$rootDir = $rootDir;
 		self::$container = $this;
 		self::$controller = null;
-
+		self::$config = null;
 		parent::__construct();
 	}
 
@@ -56,6 +61,7 @@ final class Application extends \League\Container\Container implements Container
 	{
 		$this->delegate(new \League\Container\ReflectionContainer(true));
 
+		$this->configureConfig();
 		$this->configureDatabase();
 		$this->configureModules();
 		$this->configureRouter();
@@ -68,6 +74,11 @@ final class Application extends \League\Container\Container implements Container
 		$this->configureCommands();
 	}
 
+	private function configureConfig(): void
+	{
+		$this->add(Config::class);
+		self::$config = $this->get(Config::class);
+	}
 	/**
 	 * Configure the database service
 	 * 
@@ -75,13 +86,14 @@ final class Application extends \League\Container\Container implements Container
 	 */
 	private function configureDatabase(): void
 	{
-		$this->add(ConnectionFactory::class)
-			->addArgument(Config::class);
+		$this->add(ConnectionFactory::class);
 
 		$this->addShared(
 			Connection::class,
 			fn () => $this->get(ConnectionFactory::class)->make()
 		);
+
+		Model::setConnection($this->get(Connection::class));
 	}
 
 	/**
@@ -91,12 +103,7 @@ final class Application extends \League\Container\Container implements Container
 	 */
 	private function configureModules(): void
 	{
-		$this->add(Modules::class)
-			->addArgument(
-				new StringArgument(
-					$this->get(Config::class)->get('modules.path')
-				)
-			);
+		$this->add(Modules::class);
 	}
 
 	/**
@@ -152,12 +159,7 @@ final class Application extends \League\Container\Container implements Container
 	 */
 	private function configureSession(): void
 	{
-		$this->addShared(SessionInterface::class, Session::class)
-			->addArgument(
-				new StringArgument(
-					$this->get(Config::class)->get('session.flash_key')
-				)
-			);
+		$this->addShared(SessionInterface::class, Session::class);
 	}
 
 	/**
@@ -167,12 +169,7 @@ final class Application extends \League\Container\Container implements Container
 	 */
 	private function configureTheme(): void
 	{
-		$this->add(Theme::class)
-			->addArgument(
-				new ArrayArgument(
-					$this->get(Config::class)->get('themes')
-				),
-			);
+		$this->add(Theme::class);
 	}
 
 	/**

@@ -4,22 +4,23 @@ namespace Neitsab\Framework\Database;
 
 
 use Neitsab\Framework\Core\Config;
+use Neitsab\Framework\Core\Application;
 
 class ConnectionFactory
 {
-	/**
-	 * @var Config $config - the configuration
-	 */
-	private Config $config;
-
 	/**
 	 * @var string $defaultConnection - the default connection
 	 */
 	public string $defaultConnection;
 
-	public function __construct(Config $config)
+	/**
+	 * @var Config $config - the configuration instance
+	 */
+	protected Config $config;
+
+	public function __construct()
 	{
-		$this->config = $config;
+		$this->config = Application::$config;
 		$this->defaultConnection = $this->config->get('database.default');
 	}
 

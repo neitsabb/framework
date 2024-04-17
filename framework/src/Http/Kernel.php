@@ -51,7 +51,8 @@ class Kernel
 	 */
 	public function terminate(Request $request, Response $response): void
 	{
-		$request->session?->clearFlash();
+		$request->session()?->clearFlash();
+		$request->session()?->setPreviousUrl($request->uri());
 	}
 
 	/**

@@ -41,7 +41,9 @@ class Connection
 	 */
 	public function commit(): void
 	{
-		$this->manager->commit();
+		if ($this->isTransactionActive()) {
+			$this->manager->commit();
+		}
 	}
 
 	/**

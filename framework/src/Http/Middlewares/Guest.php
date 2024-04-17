@@ -2,15 +2,15 @@
 
 namespace Neitsab\Framework\Http\Middlewares;
 
-use Neitsab\Framework\Auth\SessionAuthentification;
 use Neitsab\Framework\Http\Request;
+use Neitsab\Framework\Session\Session;
 use Neitsab\Framework\Http\Response\Response;
+use Neitsab\Framework\Session\SessionInterface;
 use Neitsab\Framework\Http\Middlewares\Contracts\MiddlewareInterface;
 use Neitsab\Framework\Http\Middlewares\Contracts\RequestHandlerInterface;
-use Neitsab\Framework\Session\Session;
-use Neitsab\Framework\Session\SessionInterface;
+use Neitsab\Framework\Http\Response\RedirectResponse;
 
-class Authenticate implements MiddlewareInterface
+class Guest implements MiddlewareInterface
 {
 	private bool $authenticated;
 
@@ -21,8 +21,8 @@ class Authenticate implements MiddlewareInterface
 
 	public function process(Request $request, RequestHandlerInterface $handler): Response
 	{
-		if (!$this->authenticated)
-			return new Response('Unauthorized', 401);
+		if ($this->authenticated)
+			return new RedirectResponse($request->session()->getPreviousUrl());
 
 		return $handler->handle($request);
 	}

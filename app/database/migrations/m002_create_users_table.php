@@ -4,10 +4,9 @@ use Neitsab\Framework\Database\Connection;
 use Neitsab\Framework\Database\Migration;
 
 
-class m20240415_create_posts_table extends Migration
+class m002_create_users_table extends Migration
 {
-
-	public string $table = 'posts';
+	public string $table = 'users';
 
 	public function __construct(Connection $connection)
 	{
@@ -21,9 +20,10 @@ class m20240415_create_posts_table extends Migration
 	{
 		parent::up();
 
-		$this->varchar('title');
-		$this->mediumText('content');
-		$this->addTimestamps();
+		$this->varchar('username');
+		$this->varchar('email');
+		$this->varchar('password');
+		$this->timestamps();
 	}
 
 	public function down(): void

@@ -2,18 +2,24 @@
 
 namespace Neitsab\Framework\Session;
 
+use Neitsab\Framework\Core\Application;
 use Neitsab\Framework\Session\SessionInterface;
 
 class Session implements SessionInterface
 {
 	/**
+	 * The key to store the user id in the session.
+	 */
+	public const AUTH_KEY = 'auth_id';
+
+	/**
 	 * @var string $flashKey - the flash key
 	 */
 	private string $flashKey;
 
-	public function __construct(string $flashKey)
+	public function __construct()
 	{
-		$this->flashKey = $flashKey;
+		$this->flashKey = Application::$config->get('session.flash_key');
 	}
 
 	/**
@@ -23,7 +29,9 @@ class Session implements SessionInterface
 	 */
 	public function start(): void
 	{
-		session_start();
+		if (session_status() === PHP_SESSION_NONE) {
+			session_start();
+		}
 	}
 
 	/**
@@ -144,5 +152,36 @@ class Session implements SessionInterface
 	public function clearFlash(): void
 	{
 		unset($_SESSION[$this->flashKey]);
+	}
+
+	/**
+	 * Set the previous url
+	 * 
+	 * @param string $url - the previous url
+	 * @return void
+	 */
+	public function setPreviousUrl(string $url): void
+	{
+		$this->set('previous_url', $url);
+	}
+
+	/**
+	 * Get the previous url
+	 * 
+	 * @return string
+	 */
+	public function getPreviousUrl(): string
+	{
+		return $this->get('previous_url', '');
+	}
+
+	/**
+	 * Check if the user is authenticated
+	 * 
+	 * @return bool
+	 */
+	public function isAuth(): bool
+	{
+		return $this->has(self::AUTH_KEY);
 	}
 }
