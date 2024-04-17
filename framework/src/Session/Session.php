@@ -8,6 +8,11 @@ use Neitsab\Framework\Session\SessionInterface;
 class Session implements SessionInterface
 {
 	/**
+	 * The key to store the user id in the session.
+	 */
+	public const AUTH_KEY = 'auth_id';
+
+	/**
 	 * @var string $flashKey - the flash key
 	 */
 	private string $flashKey;
@@ -147,5 +152,36 @@ class Session implements SessionInterface
 	public function clearFlash(): void
 	{
 		unset($_SESSION[$this->flashKey]);
+	}
+
+	/**
+	 * Set the previous url
+	 * 
+	 * @param string $url - the previous url
+	 * @return void
+	 */
+	public function setPreviousUrl(string $url): void
+	{
+		$this->set('previous_url', $url);
+	}
+
+	/**
+	 * Get the previous url
+	 * 
+	 * @return string
+	 */
+	public function getPreviousUrl(): string
+	{
+		return $this->get('previous_url', '');
+	}
+
+	/**
+	 * Check if the user is authenticated
+	 * 
+	 * @return bool
+	 */
+	public function isAuth(): bool
+	{
+		return $this->has(self::AUTH_KEY);
 	}
 }
