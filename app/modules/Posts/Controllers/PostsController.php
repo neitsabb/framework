@@ -35,7 +35,7 @@ class PostsController extends Controller
 	{
 		$posts = Post::all();
 
-		$this->request->session->setFlash('name', 'John Doe');
+		$this->request->session()->setFlash('name', 'John Doe');
 
 		return $this->render('posts/index');
 	}
@@ -47,7 +47,7 @@ class PostsController extends Controller
 
 	public function store()
 	{
-		$this->request->session->setFlash('success', 'Post created successfully!');
+		$this->request->session()->setFlash('success', 'Post created successfully!');
 
 		return new RedirectResponse('/posts');
 	}
