@@ -1,6 +1,12 @@
 <div class="sm:mx-auto sm:w-full sm:max-w-xl">
-	<h1 class="mt-6 text-center text-2xl font-bold tracking-tight text-gray-900 mb-8">Connect to your account</h1>
+	<h1 class="text-center text-2xl font-bold tracking-tight text-gray-900 mb-4">Connect to your account</h1>
 	<div class="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
+		<?php if (isset($errors['auth'])) : ?>
+			<div class="bg-red-100 border-l-4 rounded-md border-red-500 text-red-700 p-4 mb-4" role="alert">
+				<p class="font-bold">Error</p>
+				<p><?php echo $errors['auth']; ?></p>
+			</div>
+		<?php endif; ?>
 		<form class="space-y-6" action="" method="POST">
 			<div>
 				<label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email address</label>

@@ -2,23 +2,52 @@
 
 namespace Neitsab\Framework\Auth;
 
+use Modules\Auth\Models\User;
 use Neitsab\Framework\Auth\Contracts\AuthSessionInterface;
+use Neitsab\Framework\Database\Model;
+use Neitsab\Framework\Session\Session;
+use Neitsab\Framework\Session\SessionInterface;
 
 class SessionAuthentification implements AuthSessionInterface
 {
-	public function authenticate(string $username, string $password): bool
+	/**
+	 * @var SessionInterface $session
+	 */
+	private SessionInterface $session;
+	public function __construct(SessionInterface $session)
 	{
-		return $username === 'admin' && $password === 'admin';
+		$this->session = $session;
 	}
 
-	public function login($user)
+	/**
+	 * Authenticate the user with the given email and password.
+	 * 
+	 * @param string $email The user email.
+	 * @param string $password The user password.
+	 * @return bool
+	 */
+	public function authenticate(string $email, string $password): bool
 	{
-		$_SESSION['user'] = $user;
+		$user = User::where('email', $email)->first();
+
+		if (!$user || !password_verify($password, $user?->password)) {
+			return false;
+		}
+
+		$this->login($user);
+
+		return true;
+	}
+
+	public function login(Model $user)
+	{
+		$this->session->start();
+		$this->session->set(Session::AUTH_KEY, $user->id);
 	}
 
 	public function logout()
 	{
-		unset($_SESSION['user']);
+		$this->session->remove(Session::AUTH_KEY);
 	}
 
 	public function getUser()

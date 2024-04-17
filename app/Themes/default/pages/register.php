@@ -1,26 +1,46 @@
-<div class="sm:mx-auto sm:w-full sm:max-w-xl">
-	<h1 class="mt-6 text-center text-2xl font-bold tracking-tight text-gray-900 mb-8">Create an account for free</h1>
+<div class="sm:mx-auto sm:w-full sm:max-w-2xl">
+	<h1 class="text-center text-2xl font-bold tracking-tight text-gray-900 mb-4">Create an account for free</h1>
 	<div class="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
-		<form class="space-y-6" action="#" method="POST">
-			<div>
-				<label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
-				<div class="mt-2">
-					<input id="email" name="email" type="email" autocomplete="email" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+		<form class="space-y-6" action="" method="POST">
+			<div class="flex justify-between gap-6">
+				<div class="w-full">
+					<label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
+					<div class="mt-2">
+						<input id="email" name="email" type="email" autocomplete="email" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+					</div>
+					<?php if (isset($errors['email'])) : ?>
+						<p class="mt-2 text-sm text-red-600"><?= $errors['email'] ?></p>
+					<?php endif; ?>
+				</div>
+
+				<div class="w-full">
+					<label for="username" class="block text-sm font-medium leading-6 text-gray-900">Username</label>
+					<div class="mt-2">
+						<input id="username" name="username" type="text" autocomplete="username" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+					</div>
+					<?php if (isset($errors['username'])) : ?>
+						<p class="mt-2 text-sm text-red-600"><?= $errors['username'] ?></p>
+					<?php endif; ?>
 				</div>
 			</div>
-
 			<div>
 				<label for="password" class="block text-sm font-medium leading-6 text-gray-900">Password</label>
 				<div class="mt-2">
-					<input id="password" name="password" type="password" autocomplete="current-password" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+					<input id="password" name="password" type="password" autocomplete="current-password" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
 				</div>
+				<?php if (isset($errors['password'])) : ?>
+					<p class="mt-2 text-sm text-red-600"><?= $errors['password'] ?></p>
+				<?php endif; ?>
 			</div>
 
 			<div>
 				<label for="password" class="block text-sm font-medium leading-6 text-gray-900">Password Repeat</label>
 				<div class="mt-2">
-					<input id="password" name="password_confirmation" type="password" autocomplete="current-password" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+					<input id="password" name="password_confirmation" type="password" autocomplete="current-password" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
 				</div>
+				<?php if (isset($errors['password_confirmation'])) : ?>
+					<p class="mt-2 text-sm text-red-600"><?= $errors['password_confirmation'] ?></p>
+				<?php endif; ?>
 			</div>
 
 			<div>

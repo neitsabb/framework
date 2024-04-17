@@ -2,17 +2,29 @@
 
 namespace Modules\Auth\Controllers;
 
+use Neitsab\Framework\Auth\SessionAuthentification;
 use Neitsab\Framework\Http\Response\Response;
 use Neitsab\Framework\Http\Controller\Controller;
+use Neitsab\Framework\Http\Middlewares\Guest;
+use Neitsab\Framework\Http\Response\RedirectResponse;
 
 class LoginController extends Controller
 {
+	private SessionAuthentification $auth;
+
+	public function __construct(SessionAuthentification $auth)
+	{
+		$this->auth = $auth;
+	}
 	public static function routes(): array
 	{
 		return [
 			'index' => [
 				'path' => '/login',
 				'method' => 'GET',
+				'middlewares' => [
+					Guest::class
+				]
 			],
 			'store' => [
 				'path' => '/login',
@@ -33,12 +45,16 @@ class LoginController extends Controller
 			'password' => 'required',
 		]);
 
-		dd($errors);
+		$isAuth = $this->auth->authenticate(
+			$this->request->input('email'),
+			$this->request->input('password')
+		);
 
-		return new Response('Redirect to the dashboard');
-		// Handle the login form submission
-		// Validate the form data
-		// Authenticate the user
-		// Redirect the user to the dashboard
+		if (!$isAuth) {
+			$errors['auth'] = 'Invalid credentials';
+			return $this->render('login', ['errors' => $errors]);
+		}
+
+		return new RedirectResponse('dashboard');
 	}
 }
