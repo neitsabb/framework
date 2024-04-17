@@ -39,49 +39,18 @@ class Router implements RouterInterface
 	 */
 	public function dispatch(Request $request): array
 	{
-		$routeInfo = $this->extractRouteInfo($request);
-
-		[$handler, $vars] = $routeInfo;
+		[$handler, $vars] = $request->getHandlerWithArgs();
 
 		if (is_array($handler)) {
-			[$controllerId, $action] = $handler;
-			$controller = Application::$container->get($controllerId);
+			$controller = Application::$container->get($handler['controller']);
 			if (is_subclass_of($controller, 'Neitsab\Framework\Http\Controller\Controller')) {
 				$controller->setRequest($request);
 				Application::$container->setController($controller);
 			}
-			$handler = [$controller, $action];
+			$handler = [$controller, $handler['action']];
 		}
 
 		return [$handler, $vars];
-	}
-
-	/**
-	 * Extract the route info
-	 * 
-	 * @param Request $request - The request to extract the route info from
-	 * @return array - The route info
-	 */
-	private function extractRouteInfo(Request $request): array
-	{
-		$routeInfo = $this->createDispatcher()
-			->dispatch(
-				$request->method(),
-				$request->uri()
-			);
-
-		switch ($routeInfo[0]) {
-			case Dispatcher::FOUND:
-				return [$routeInfo[1], $routeInfo[2]]; // routeHandler, vars
-			case Dispatcher::METHOD_NOT_ALLOWED:
-				$allowedMethods = implode(', ', $routeInfo[1]);
-				$e = new HttpRequestMethodException("The allowed methods are $allowedMethods");
-				$e->setStatusCode(405);
-			default:
-				$e = new HttpException('Not found');
-				$e->setStatusCode(404);
-				throw $e;
-		}
 	}
 
 	/**
@@ -89,10 +58,10 @@ class Router implements RouterInterface
 	 * 
 	 * @return Dispatcher - The dispatcher
 	 */
-	private function createDispatcher(): Dispatcher
+	public function createDispatcher(): Dispatcher
 	{
 		return \FastRoute\simpleDispatcher(function (RouteCollector $r) {
-			$this->routes = $this->loadRoutes($r);
+			$this->loadRoutes($r);
 		});
 	}
 
@@ -102,9 +71,8 @@ class Router implements RouterInterface
 	 * @param RouteCollector $router - The router to load the routes into
 	 * @return void
 	 */
-	public function loadRoutes(RouteCollector $router): array
+	public function loadRoutes(RouteCollector $router): void
 	{
-		$loadedRoutes = [];
 		foreach ($this->modules->all() as $moduleName => $modules) {
 			foreach ($modules as $componentName => $component) {
 				foreach ($component as $controllerName) {
@@ -115,20 +83,18 @@ class Router implements RouterInterface
 					$controllerNamespace = 'Modules\\' . $moduleName . '\\' . $componentName . '\\' . $controllerName;
 
 					if (class_exists($controllerNamespace)) {
-
 						$reflectionClass = new \ReflectionClass($controllerNamespace);
 						if ($reflectionClass->hasMethod('routes')) {
 							$routes = $controllerNamespace::routes();
 							foreach ($routes as $action => $route) {
 								if ($reflectionClass->hasMethod('__invoke')) {
-									$loadedRoutes[$route['method']][$route['path']] = $controllerNamespace;
-
 									$router->addRoute($route['method'], $route['path'], $controllerNamespace);
 								} else {
-									$loadedRoutes[$route['method']][$route['path']] = [$controllerNamespace, $action];
-
-									// Si le contrôleur n'est pas invocable, utilisez la méthode spécifiée comme action
-									$router->addRoute($route['method'], $route['path'], [$controllerNamespace, $action]);
+									$router->addRoute($route['method'], $route['path'], [
+										'controller' => $controllerNamespace,
+										'action' => $action,
+										'middlewares' => $route['middlewares'] ?? []
+									]);
 								}
 							}
 						}
@@ -136,7 +102,5 @@ class Router implements RouterInterface
 				}
 			}
 		}
-
-		return $loadedRoutes;
 	}
 }

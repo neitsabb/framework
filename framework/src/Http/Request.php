@@ -36,6 +36,16 @@ class Request
      */
     public SessionInterface $session;
 
+    /**
+     * @var mixed $handler - The request handler.
+     */
+    public mixed $handler;
+
+    /**
+     * @var array $handlerArgs - The arguments to pass to the handler.
+     */
+    public array $handlerArgs = [];
+
     public function __construct(
         array $getParams,
         array $postParams,
@@ -50,7 +60,7 @@ class Request
         $this->server = $server;
     }
 
-    public function validate(array $rules): array
+    public function validate(array $rules, ?string $model = null): array
     {
         $errors = [];
 
@@ -65,7 +75,10 @@ class Request
                 $ruleName = $ruleDetails[0];
                 $ruleValue = $ruleDetails[1] ?? null;
 
-                $errors[$key] = $this->validateRule($input, $ruleName, $ruleValue, $key);
+                if ($error = $this->validateRule($input, $ruleName, $ruleValue, $key, $model)) {
+                    $errors[$key] = $error;
+                    break;
+                }
             }
         }
 
@@ -76,12 +89,17 @@ class Request
         mixed $input,
         string $ruleName,
         mixed $ruleValue,
-        string $key
+        string $key,
+        ?string $model
     ) {
+        if (!$model && $ruleName === 'unique') {
+            throw new \Exception('The unique rule requires a model.');
+        }
+
         switch ($ruleName) {
             case 'required':
                 if ($input === null || $input === '' || empty($input)) {
-                    return 'The ' . $key . ' field is required.';
+                    return 'The ' . str_replace('_', ' ', $key) . ' field is required.';
                 }
                 break;
             case 'email':
@@ -100,11 +118,39 @@ class Request
                 }
                 break;
             case 'unique':
-                // Check if the value is unique in the database
+                if ($model::where($key, $input)->first()) {
+                    return 'The ' . $key . ' field must be unique.';
+                }
+                break;
+            case 'same':
+                if ($input !== $this->input($ruleValue)) {
+                    return 'The ' . str_replace('_', ' ', $key) . ' field must be the same as the ' . $ruleValue . ' field.';
+                }
+                break;
+            case 'alpha_num':
+                if (!ctype_alnum($input)) {
+                    return 'The ' . $key . ' field must be alphanumeric.';
+                }
                 break;
             default:
                 throw new \Exception('The validation rule ' . $ruleName . ' does not exist.');
         }
+    }
+
+    public function session(): SessionInterface
+    {
+        return $this->session;
+    }
+
+    public function getHandlerWithArgs(): array
+    {
+        return [$this->handler, $this->handlerArgs];
+    }
+
+    public function setHandlerWithArgs(mixed $handler, array $args): void
+    {
+        $this->handler = $handler;
+        $this->handlerArgs = $args;
     }
 
     /**

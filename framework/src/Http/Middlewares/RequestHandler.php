@@ -12,7 +12,7 @@ class RequestHandler implements RequestHandlerInterface
 {
 	private array $middlewares = [
 		StartSession::class,
-		Authenticate::class,
+		ExtractRouteInfo::class,
 		RouterDispatcher::class,
 	];
 
@@ -33,5 +33,22 @@ class RequestHandler implements RequestHandlerInterface
 		if (empty($this->middlewares)) {
 			throw new RequestHandlerException('No middlewares found.');
 		}
+	}
+
+	/**
+	 * Inject middlewares at the beginning of the array.
+	 * 
+	 * @param array $middlewares
+	 * @return void
+	 */
+	public function inject(array $middlewares): void
+	{
+		// Inject the middlewares at the beginning of the array
+		array_splice(
+			$this->middlewares,
+			0,
+			0,
+			$middlewares
+		);
 	}
 }
