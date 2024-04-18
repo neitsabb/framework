@@ -2,24 +2,27 @@
 
 namespace Neitsab\Framework\Core;
 
-use League\Container\Argument\Literal\StringArgument;
-use Psr\Container\ContainerInterface;
-
 use Neitsab\Framework\Http\Kernel;
 use Neitsab\Framework\Router\Router;
-use Neitsab\Framework\Console\Console;
-use Neitsab\Framework\Session\Session;
+
 use Neitsab\Framework\Database\Model;
+use Psr\Container\ContainerInterface;
+use Neitsab\Framework\Console\Console;
+use Neitsab\Framework\Modules\Modules;
+use Neitsab\Framework\Session\Session;
 use Neitsab\Framework\Template\Template;
 use Neitsab\Framework\Database\Connection;
+use Neitsab\Framework\Events\EventDispatcher;
 use Neitsab\Framework\Router\RouterInterface;
 use Neitsab\Framework\Session\SessionInterface;
 use Neitsab\Framework\Template\TemplateFactory;
 use Neitsab\Framework\Database\ConnectionFactory;
 use Neitsab\Framework\Http\Controller\Controller;
+use League\Container\Argument\Literal\StringArgument;
+use Neitsab\Framework\Providers\EventServiceProvider;
+use Neitsab\Framework\Console\Kernel as ConsoleKernel;
 use Neitsab\Framework\Http\Middlewares\RequestHandler;
 use Neitsab\Framework\Http\Middlewares\Contracts\RequestHandlerInterface;
-use Neitsab\Framework\Console\Kernel as ConsoleKernel;
 
 final class Application extends \League\Container\Container implements ContainerInterface
 {
@@ -59,6 +62,41 @@ final class Application extends \League\Container\Container implements Container
 	 */
 	public function configure(): void
 	{
+		$this->configureContainerApp();
+
+		$this->registerProviders();
+	}
+
+	/**
+	 * Register the service providers
+	 * 
+	 * @return void
+	 */
+	private function registerProviders(): void
+	{
+		$providers = [
+			EventServiceProvider::class
+		];
+
+		foreach ($providers as $provider) {
+			$this->_addServiceProvider($provider);
+		}
+	}
+
+	/**
+	 * Add a service provider to the container
+	 * 
+	 * @param string $provider - the provider class name
+	 * @return void
+	 */
+	private function _addServiceProvider(string $provider): void
+	{
+		$this->get($provider)
+			->register();
+	}
+
+	private function configureContainerApp(): void
+	{
 		$this->delegate(new \League\Container\ReflectionContainer(true));
 
 		$this->configureConfig();
@@ -67,6 +105,7 @@ final class Application extends \League\Container\Container implements Container
 		$this->configureRouter();
 		$this->configureConsole();
 		$this->configureRequestHandler();
+		$this->configureEventDispatcher();
 		$this->configureKernel();
 		$this->configureSession();
 		$this->configureTheme();
@@ -138,6 +177,11 @@ final class Application extends \League\Container\Container implements Container
 		$this->add(RequestHandlerInterface::class, RequestHandler::class);
 	}
 
+	private function configureEventDispatcher(): void
+	{
+		$this->addShared(EventDispatcher::class);
+	}
+
 	/**
 	 * Configure the kernel service
 	 * 
@@ -147,8 +191,8 @@ final class Application extends \League\Container\Container implements Container
 	{
 		$this->add(Kernel::class)
 			->addArguments([
-				RouterInterface::class,
 				RequestHandlerInterface::class,
+				EventDispatcher::class
 			]);
 	}
 
