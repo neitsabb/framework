@@ -5,13 +5,11 @@ namespace Neitsab\Framework\Router;
 
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use Neitsab\Framework\Core\Application;
-
-use Neitsab\Framework\Core\Modules;
 use Neitsab\Framework\Http\Request;
+
+use Neitsab\Framework\Modules\Modules;
+use Neitsab\Framework\Core\Application;
 use Neitsab\Framework\Router\RouterInterface;
-use Neitsab\Framework\Http\Exceptions\HttpException;
-use Neitsab\Framework\Http\Exceptions\HttpRequestMethodException;
 
 class Router implements RouterInterface
 {

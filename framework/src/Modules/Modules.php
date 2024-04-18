@@ -1,6 +1,8 @@
 <?php
 
-namespace Neitsab\Framework\Core;
+namespace Neitsab\Framework\Modules;
+
+use Neitsab\Framework\Core\Application;
 
 class Modules
 {
