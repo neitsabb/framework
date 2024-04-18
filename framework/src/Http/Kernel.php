@@ -2,28 +2,31 @@
 
 namespace Neitsab\Framework\Http;
 
-
+use Neitsab\Framework\Events\EventDispatcher;
 use Neitsab\Framework\Http\Response\Response;
 use Neitsab\Framework\Router\RouterInterface;
+use Neitsab\Framework\Http\Events\ResponseEvent;
 use Neitsab\Framework\Http\Exceptions\HttpException;
 use Neitsab\Framework\Http\Middlewares\Contracts\RequestHandlerInterface;
 
 class Kernel
 {
 	/**
-	 * @var RouterInterface $router - The router instance
-	 */
-	protected RouterInterface $router;
-
-	/**
 	 * @var RequestHandlerInterface $requestHandler - The request handler instance
 	 */
 	protected RequestHandlerInterface $requestHandler;
 
-	public function __construct(RouterInterface $router, RequestHandlerInterface $requestHandler)
-	{
-		$this->router = $router;
+	/**
+	 * @var EventDispatcher $eventDispatcher - The event dispatcher instance
+	 */
+	protected EventDispatcher $eventDispatcher;
+
+	public function __construct(
+		RequestHandlerInterface $requestHandler,
+		EventDispatcher $eventDispatcher
+	) {
 		$this->requestHandler = $requestHandler;
+		$this->eventDispatcher = $eventDispatcher;
 	}
 
 	/**
@@ -39,6 +42,8 @@ class Kernel
 		} catch (\Exception $exception) {
 			$response = $this->createExceptionResponse($exception);
 		}
+
+		$this->eventDispatcher->dispatch(new ResponseEvent($request, $response));
 
 		return $response;
 	}
