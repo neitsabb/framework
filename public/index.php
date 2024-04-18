@@ -14,7 +14,6 @@ define('APP_ROOT', $_ENV['APP_URL'] ?? dirname(__DIR__));
  * @author Neitsab
  */
 
-
 $app = require_once APP_ROOT . '/bootstrap/app.php';
 
 $kernel = $app->get(Neitsab\Framework\Http\Kernel::class);

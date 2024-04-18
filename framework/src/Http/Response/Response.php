@@ -68,7 +68,20 @@ class Response
      */
     public function send(): void
     {
+        ob_start();
+
+        foreach ($this->headers as $name => $value) {
+            header("$name: $value");
+        }
+
         echo $this->content;
+
+        ob_end_flush();
+    }
+
+    public function getContent(): ?string
+    {
+        return $this->content;
     }
 
     /**
@@ -80,5 +93,31 @@ class Response
     public function setContent(string $content): void
     {
         $this->content = $content;
+    }
+
+    public function setHeader(string $name, string $value): void
+    {
+        $this->headers[$name] = $value;
+    }
+
+    public function getHeader(string $name)
+    {
+        return $this->headers[$name] ?? null;
+    }
+
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(int $status): void
+    {
+        $this->status = $status;
+        http_response_code($this->status);
     }
 }

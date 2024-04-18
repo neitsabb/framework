@@ -5,6 +5,7 @@ namespace Neitsab\Framework\Http\Controller;
 use Neitsab\Framework\Http\Request;
 use Neitsab\Framework\Core\Application;
 use Neitsab\Framework\Template\Template;
+use Neitsab\Framework\Events\EventDispatcher;
 use Neitsab\Framework\Http\Response\Response;
 
 abstract class Controller
@@ -43,15 +44,10 @@ abstract class Controller
 	 */
 	abstract public static function routes(): array;
 
-	/**
-	 * Register a middleware for the controller.
-	 * 
-	 * @param array $middlewares - The middlewares to register.
-	 * @return void
-	 */
-	protected function registerMiddleware(array $middlewares): void
+	protected function registerEventsListener(string $name, callable $listener): void
 	{
-		$this->middlewares[] = $middlewares;
+		Application::$container->get(EventDispatcher::class)
+			->addListener($name, $listener);
 	}
 
 	/**
