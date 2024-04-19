@@ -2,6 +2,7 @@
 
 namespace Neitsab\Framework\Http;
 
+use Neitsab\Framework\Http\Request\Request;
 use Neitsab\Framework\Events\EventDispatcher;
 use Neitsab\Framework\Http\Response\Response;
 use Neitsab\Framework\Router\RouterInterface;
