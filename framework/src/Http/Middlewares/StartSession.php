@@ -2,8 +2,8 @@
 
 namespace Neitsab\Framework\Http\Middlewares;
 
-use Neitsab\Framework\Http\Request;
 use Neitsab\Framework\Core\Application;
+use Neitsab\Framework\Http\Request\Request;
 use Neitsab\Framework\Http\Response\Response;
 use Neitsab\Framework\Session\SessionInterface;
 use Neitsab\Framework\Http\Middlewares\Contracts\MiddlewareInterface;

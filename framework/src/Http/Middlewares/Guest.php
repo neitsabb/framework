@@ -2,7 +2,7 @@
 
 namespace Neitsab\Framework\Http\Middlewares;
 
-use Neitsab\Framework\Http\Request;
+use Neitsab\Framework\Http\Request\Request;
 use Neitsab\Framework\Session\Session;
 use Neitsab\Framework\Http\Response\Response;
 use Neitsab\Framework\Session\SessionInterface;

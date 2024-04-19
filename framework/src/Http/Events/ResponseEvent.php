@@ -3,7 +3,7 @@
 namespace Neitsab\Framework\Http\Events;
 
 use Neitsab\Framework\Events\Event;
-use Neitsab\Framework\Http\Request;
+use Neitsab\Framework\Http\Request\Request;
 use Neitsab\Framework\Http\Response\Response;
 
 class ResponseEvent extends Event

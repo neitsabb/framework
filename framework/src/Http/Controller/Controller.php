@@ -2,7 +2,7 @@
 
 namespace Neitsab\Framework\Http\Controller;
 
-use Neitsab\Framework\Http\Request;
+use Neitsab\Framework\Http\Request\Request;
 use Neitsab\Framework\Core\Application;
 use Neitsab\Framework\Template\Template;
 use Neitsab\Framework\Events\EventDispatcher;
@@ -57,9 +57,10 @@ abstract class Controller
 	 * @param array $params - The parameters to pass to the view
 	 * @return Response
 	 */
-	protected function render(string $view, array $params = []): Response
+	protected function render(array $params = [], ?string $view = null): Response
 	{
-		$content = Application::$container->get(Template::class)->build($view, $params, $this->layout);
+		$content = Application::$container->get(Template::class)
+			->build($params, $this->request, $view);
 
 		$response ??= new Response();
 
