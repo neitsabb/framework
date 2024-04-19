@@ -5,11 +5,13 @@ namespace Neitsab\Framework\Router;
 
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use Neitsab\Framework\Http\Request;
-
 use Neitsab\Framework\Modules\Modules;
+
 use Neitsab\Framework\Core\Application;
+use Neitsab\Framework\Http\Request\Request;
 use Neitsab\Framework\Router\RouterInterface;
+use Neitsab\Framework\Administration\Controllers\DashboardController;
+use Neitsab\Framework\Administration\Controllers\AdministrationController;
 
 class Router implements RouterInterface
 {
@@ -59,8 +61,21 @@ class Router implements RouterInterface
 	public function createDispatcher(): Dispatcher
 	{
 		return \FastRoute\simpleDispatcher(function (RouteCollector $r) {
-			$this->loadRoutes($r);
+			$this->loadRoutesFromAdmin($r);
+			$this->loadRoutesFromModules($r);
 		});
+	}
+
+	private function loadRoutesFromAdmin(RouteCollector $r)
+	{
+		$adminRoutes = AdministrationController::routes();
+		foreach ($adminRoutes as $action => $route) {
+			$r->addRoute($route['method'], $route['path'], [
+				'controller' => AdministrationController::class,
+				'action' => $action,
+				'middlewares' => $route['middlewares'] ?? []
+			]);
+		}
 	}
 
 	/**
@@ -69,7 +84,7 @@ class Router implements RouterInterface
 	 * @param RouteCollector $router - The router to load the routes into
 	 * @return void
 	 */
-	public function loadRoutes(RouteCollector $router): void
+	public function loadRoutesFromModules(RouteCollector $router): void
 	{
 		foreach ($this->modules->all() as $moduleName => $modules) {
 			foreach ($modules as $componentName => $component) {
