@@ -2,6 +2,8 @@
 
 namespace Neitsab\Framework\Template;
 
+use Neitsab\Framework\Http\Request;
+use Neitsab\Framework\Database\Connection;
 use Neitsab\Framework\Session\SessionInterface;
 
 class TemplateFactory
@@ -16,10 +18,18 @@ class TemplateFactory
 	 */
 	protected SessionInterface $session;
 
-	public function __construct(string $themePath, SessionInterface $session)
+	/**
+	 * @var Connection $connection - The database connection.
+	 */
+	protected Connection $connection;
+
+
+
+	public function __construct(string $themePath, SessionInterface $session, Connection $connection)
 	{
 		$this->themePath = $themePath;
 		$this->session = $session;
+		$this->connection = $connection;
 	}
 
 	/**
@@ -29,6 +39,10 @@ class TemplateFactory
 	 */
 	public function make(): Template
 	{
-		return new Template($this->themePath, $this->session);
+		return new Template(
+			$this->themePath,
+			$this->session,
+			$this->connection,
+		);
 	}
 }
