@@ -1,11 +1,13 @@
 <?php
 
-namespace Neitsab\Framework\Http\Middlewares;
+namespace Neitsab\Framework\Router\Middlewares;
 
 use FastRoute\Dispatcher;
-use Neitsab\Framework\Http\Request;
+use Neitsab\Framework\Http\Request\Request;
+use Neitsab\Framework\Core\Application;
 use Neitsab\Framework\Http\Response\Response;
 use Neitsab\Framework\Router\RouterInterface;
+use Neitsab\Framework\Administration\Administration;
 use Neitsab\Framework\Http\Exceptions\HttpException;
 use Neitsab\Framework\Http\Exceptions\HttpRequestMethodException;
 use Neitsab\Framework\Http\Middlewares\Contracts\MiddlewareInterface;
@@ -39,8 +41,7 @@ class ExtractRouteInfo implements MiddlewareInterface
 				$e = new HttpRequestMethodException("The allowed methods are $allowedMethods");
 				$e->setStatusCode(405);
 			default:
-				$e = new HttpException('Not found');
-				$e->setStatusCode(404);
+				$e = new HttpException('Page not found', 404);
 				throw $e;
 		}
 

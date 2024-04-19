@@ -1,6 +1,6 @@
 <?php
 
-namespace Neitsab\Framework\Http;
+namespace Neitsab\Framework\Http\Request;
 
 use Neitsab\Framework\Session\SessionInterface;
 

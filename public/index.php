@@ -19,7 +19,7 @@ $app = require_once APP_ROOT . '/bootstrap/app.php';
 $kernel = $app->get(Neitsab\Framework\Http\Kernel::class);
 
 $response = $kernel->handle(
-	$request = Neitsab\Framework\Http\Request::capture()
+	$request = Neitsab\Framework\Http\Request\Request::capture()
 );
 
 $response->send();

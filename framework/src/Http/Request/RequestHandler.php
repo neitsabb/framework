@@ -1,12 +1,18 @@
 <?php
 
-namespace Neitsab\Framework\Http\Middlewares;
+namespace Neitsab\Framework\Http\Request;
 
 use Neitsab\Framework\Core\Application;
+use Neitsab\Framework\Http\Request\Request;
 use Neitsab\Framework\Http\Response\Response;
+use Neitsab\Framework\Http\Middlewares\StartSession;
+use Neitsab\Framework\Router\Middlewares\ExtractRouteInfo;
+use Neitsab\Framework\Router\Middlewares\RouterDispatcher;
 use Neitsab\Framework\Http\Exceptions\RequestHandlerException;
+use Neitsab\Framework\Router\Middlewares\AdminRouterDispatcher;
 use Neitsab\Framework\Http\Middlewares\Contracts\RequestHandlerInterface;
-use Neitsab\Framework\Http\Request;
+
+
 
 class RequestHandler implements RequestHandlerInterface
 {
@@ -18,7 +24,7 @@ class RequestHandler implements RequestHandlerInterface
 
 	public function handle(Request $request): Response
 	{
-		$this->checkMiddlewares();
+		$this->checkMiddlewares($request);
 
 		$middleware = array_shift($this->middlewares);
 
@@ -28,7 +34,7 @@ class RequestHandler implements RequestHandlerInterface
 		return $response;
 	}
 
-	private function checkMiddlewares()
+	private function checkMiddlewares(Request $request): void
 	{
 		if (empty($this->middlewares)) {
 			throw new RequestHandlerException('No middlewares found.');

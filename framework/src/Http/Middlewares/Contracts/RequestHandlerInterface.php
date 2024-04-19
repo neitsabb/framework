@@ -3,7 +3,7 @@
 namespace Neitsab\Framework\Http\Middlewares\Contracts;
 
 
-use Neitsab\Framework\Http\Request;
+use Neitsab\Framework\Http\Request\Request;
 use Neitsab\Framework\Http\Response\Response;
 
 interface RequestHandlerInterface

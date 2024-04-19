@@ -1,8 +1,8 @@
 <?php
 
-namespace Neitsab\Framework\Http\Middlewares;
+namespace Neitsab\Framework\Router\Middlewares;
 
-use Neitsab\Framework\Http\Request;
+use Neitsab\Framework\Http\Request\Request;
 use Neitsab\Framework\Http\Response\Response;
 use Neitsab\Framework\Router\RouterInterface;
 use Neitsab\Framework\Http\Middlewares\Contracts\MiddlewareInterface;
