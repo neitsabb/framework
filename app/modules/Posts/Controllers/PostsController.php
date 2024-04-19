@@ -15,18 +15,6 @@ class PostsController extends Controller
 			'index' => [
 				'path' => '/posts',
 				'method' => 'GET'
-			],
-			'create' => [
-				'path' => '/posts/create',
-				'method' => 'GET'
-			],
-			'store' => [
-				'path' => '/posts/create',
-				'method' => 'POST'
-			],
-			'show' => [
-				'path' => '/posts/{id:\d+}',
-				'method' => 'GET'
 			]
 		];
 	}
@@ -37,23 +25,6 @@ class PostsController extends Controller
 
 		$this->request->session()->setFlash('name', 'John Doe');
 
-		return $this->render('posts/index');
-	}
-
-	public function create()
-	{
-		return $this->render('posts/create');
-	}
-
-	public function store()
-	{
-		$this->request->session()->setFlash('success', 'Post created successfully!');
-
-		return new RedirectResponse('/posts');
-	}
-
-	public function show($id)
-	{
-		return new Response('posts' . $id);
+		return $this->render();
 	}
 }

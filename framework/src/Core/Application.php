@@ -2,9 +2,10 @@
 
 namespace Neitsab\Framework\Core;
 
+use Neitsab\Framework\Administration\Administration;
 use Neitsab\Framework\Http\Kernel;
-use Neitsab\Framework\Router\Router;
 
+use Neitsab\Framework\Router\Router;
 use Neitsab\Framework\Database\Model;
 use Psr\Container\ContainerInterface;
 use Neitsab\Framework\Console\Console;
@@ -19,9 +20,10 @@ use Neitsab\Framework\Template\TemplateFactory;
 use Neitsab\Framework\Database\ConnectionFactory;
 use Neitsab\Framework\Http\Controller\Controller;
 use League\Container\Argument\Literal\StringArgument;
+use Neitsab\Framework\Administration\DashboardController;
 use Neitsab\Framework\Providers\EventServiceProvider;
 use Neitsab\Framework\Console\Kernel as ConsoleKernel;
-use Neitsab\Framework\Http\Middlewares\RequestHandler;
+use Neitsab\Framework\Http\Request\RequestHandler;
 use Neitsab\Framework\Http\Middlewares\Contracts\RequestHandlerInterface;
 
 final class Application extends \League\Container\Container implements ContainerInterface
@@ -213,7 +215,8 @@ final class Application extends \League\Container\Container implements Container
 	 */
 	private function configureTheme(): void
 	{
-		$this->add(Theme::class);
+		$this->add(Theme::class)
+			->addArgument(Connection::class);
 	}
 
 	/**
@@ -229,6 +232,7 @@ final class Application extends \League\Container\Container implements Container
 					$this->get(Theme::class)->getPath()
 				),
 				SessionInterface::class,
+				Connection::class,
 			]);
 
 		$this->addShared(
