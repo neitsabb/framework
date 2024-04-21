@@ -40,14 +40,16 @@ class Template
 
 		if ($this->isAdmin) {
 			$layoutPath = Application::$rootDir . "/app/admin/layouts/" . Application::$controller->layout . ".php";
+		} else if (Application::$controller->layout) {
+			$layoutPath = $this->themePath . '/layouts/' . Application::$controller->layout . '.php';
 		} else {
-			$layoutPath = $this->themePath . '/layouts/main.php';
+			$layoutPath = $this->themePath . '/layouts/default.php';
 		}
 
 		return $this->renderView($layoutPath, $params);
 	}
 
-	private function getContent(array $params, string $uri, ?string $view): string
+	private function getContent(array $params, string $uri, ?string $view): ?string
 	{
 		if (Application::$controller->layout === 'admin') {
 			return $this->renderView(Application::$rootDir . "/app/admin/views/$view.php", $params);
@@ -55,18 +57,19 @@ class Template
 
 		$page = $this->getCurrentPage($uri);
 
-		if (!$page) {
-			throw new \Exception('Page not found in the database');
+		if ($page) {
+			// throw new \Exception('Page not found in the database');
+			$components = $this->getComponentsForCurrentPage($page);
+			$content = '';
+
+			foreach ($components as $component) {
+				$content .= $this->renderView($component['path'] . '/index.php', $params);
+			}
+
+			return $content;
 		}
 
-		$components = $this->getComponentsForCurrentPage($page);
-		$content = '';
-
-		foreach ($components as $component) {
-			$content .= $this->renderView($component['path'] . '/index.php', $params);
-		}
-
-		return $content;
+		return $this->renderView($this->themePath . '/views/' . $view . '.php', $params);
 	}
 
 	private function renderView(string $viewPath, array $params = []): string

@@ -10,6 +10,8 @@ use Neitsab\Framework\Http\Response\RedirectResponse;
 
 class LoginController extends Controller
 {
+	public string $layout = 'guest';
+
 	private SessionAuthentification $auth;
 
 	public function __construct(SessionAuthentification $auth)
@@ -35,28 +37,11 @@ class LoginController extends Controller
 
 	public function index()
 	{
-		return $this->render([
-			'name' => 'test'
-		]);
-	}
-
-	public function store(): Response
-	{
-		$errors = $this->request->validate([
-			'email' => 'required|email',
-			'password' => 'required',
-		]);
-
-		$isAuth = $this->auth->authenticate(
-			$this->request->input('email'),
-			$this->request->input('password')
+		return $this->render(
+			params: [
+				'name' => 'test'
+			],
+			view: 'login'
 		);
-
-		if (!$isAuth) {
-			$errors['auth'] = 'Invalid credentials';
-			return $this->render('login', ['errors' => $errors]);
-		}
-
-		return new RedirectResponse('dashboard');
 	}
 }
